@@ -21,6 +21,16 @@ namespace MySims
         /// <summary>true si lo colocó el jugador en modo construcción (se guarda en la partida).</summary>
         public bool placedByPlayer;
 
+        [Header("Habilidad")]
+        [Tooltip("Habilidad que entrena al usarlo. Carisma se entrena conversando.")]
+        public SkillType trainsSkill;
+        [Tooltip("XP por segundo de uso")]
+        public float skillXpPerUse = 1f;
+
+        [Header("Tienda")]
+        [Tooltip("Precio de compra en modo construcción. 0 = gratis")]
+        public float price;
+
         NPCController currentUser;
 
         void OnEnable() => All.Add(this);

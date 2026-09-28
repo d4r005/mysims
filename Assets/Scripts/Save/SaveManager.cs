@@ -20,11 +20,24 @@ namespace MySims
             {
                 day = TimeSystem.Instance.CurrentDay,
                 hour = TimeSystem.Instance.CurrentHour,
+                money = EconomySystem.Instance != null ? EconomySystem.Instance.money : 0f,
+                job = JobSystem.Instance != null && JobSystem.Instance.currentJob != null ? new JobData
+                {
+                    name = JobSystem.Instance.currentJob.name,
+                    startHour = JobSystem.Instance.currentJob.startHour,
+                    endHour = JobSystem.Instance.currentJob.endHour,
+                    hourlyPay = JobSystem.Instance.currentJob.hourlyPay,
+                    worksWeekend = JobSystem.Instance.currentJob.worksWeekend
+                } : null,
                 playerPosition = ToSerializable(gm.playerCharacter.transform.position)
             };
 
             foreach (var need in gm.playerNeeds.needs)
                 data.needs.Add(new NeedData { type = (int)need.type, value = need.value });
+
+            if (SkillSystem.Instance != null)
+                foreach (var s in SkillSystem.Instance.skills)
+                    data.skills.Add(new SkillData { type = (int)s.type, level = s.level, xp = s.xp });
 
             foreach (var obj in PlaceableObject.All)
             {
@@ -60,6 +73,24 @@ namespace MySims
             var gm = GameManager.Instance;
             TimeSystem.Instance.SetFromLoad(data.day, data.hour);
             gm.playerCharacter.transform.position = FromSerializable(data.playerPosition);
+
+            if (EconomySystem.Instance != null) EconomySystem.Instance.money = data.money;
+            if (JobSystem.Instance != null && data.job != null)
+                JobSystem.Instance.SetJob(new Job
+                {
+                    name = data.job.name,
+                    startHour = data.job.startHour,
+                    endHour = data.job.endHour,
+                    hourlyPay = data.job.hourlyPay,
+                    worksWeekend = data.job.worksWeekend
+                });
+
+            if (SkillSystem.Instance != null)
+                foreach (var sd in data.skills)
+                {
+                    var skill = SkillSystem.Instance.GetSkill((SkillType)sd.type);
+                    if (skill != null) { skill.level = sd.level; skill.xp = sd.xp; }
+                }
 
             foreach (var nd in data.needs)
             {

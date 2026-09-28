@@ -2,7 +2,7 @@
 
 Juego de simulación social estilo *Los Sims* para **Android**, construido con **Unity 2022.3 LTS (C#)**.
 
-## Estado actual: Fase 2 (loop jugable en móvil)
+## Estado actual: Fase 3 (mundo vivo: economía, NPCs y habilidades)
 
 Sistemas ya implementados como código base:
 
@@ -34,7 +34,18 @@ Sistemas ya implementados como código base:
 
 ## Hoja de ruta
 
-Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para las fases completas (interacción táctil, casa editable, economía, NPCs con rutinas,multiplayer y publicación en Google Play).
+Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para las fases completas (editor de casa, personalización, nube y publicación en Google Play).
+
+**Novedades Fase 3:**
+
+| Sistema | Script | Qué hace |
+|---|---|---|
+| 💰 Economía | `Economy/EconomySystem.cs` | Billetera con eventos de cambio para UI y guardado |
+| 💼 Trabajos | `Economy/JobSystem.cs` | Horario laboral, conmuta al punto de trabajo y cobra por hora |
+| 📅 Calendario | `Core/CalendarSystem.cs` | Días de la semana, fin de semana y festivos |
+| 🚶 NPC con rutina | `NPC/NPCRoutine.cs` | NPCs secundarios con horario diario (deambular, usar muebles, dormir, conversar) |
+| 💬 Diálogos | `Social/DialogueSystem.cs` | Conversaciones por turnos con temas y relación por NPC |
+| 🌟 Habilidades | `Skills/SkillSystem.cs` | 5 habilidades con niveles y XP; los muebles pueden entrenar |
 
 ## Estructura
 
@@ -43,7 +54,10 @@ Assets/Scripts/
 ├── Core/       GameManager, TimeSystem, PrefabRegistry
 ├── Needs/      Sistema de necesidades (el corazón del gameplay)
 ├── NPC/        IA de decisiones + animación procedural
-├── Building/   Colocación de objetos y modo construcción
+├── Building/   Colocación de objetos, modo construcción y tienda
+├── Economy/    Billetera y sistema de trabajos
+├── Social/     Diálogos y relaciones
+├── Skills/     Habilidades con XP
 ├── Input/      Entrada táctil (tap para mover/usar)
 ├── Camera/     Cámara orbital táctil
 ├── UI/         Barras de necesidad y controles de tiempo

@@ -8,10 +8,24 @@ namespace MySims
     {
         public int day;
         public float hour;
+        public float money;
+        public JobData job;
         public Vector3Serializable playerPosition;
         public List<NeedData> needs = new List<NeedData>();
+        public List<SkillData> skills = new List<SkillData>();
         public List<PlacedObjectData> placedObjects = new List<PlacedObjectData>();
     }
+
+    [Serializable]
+    public class JobData
+    {
+        public string name;
+        public float startHour, endHour, hourlyPay;
+        public bool worksWeekend;
+    }
+
+    [Serializable]
+    public class SkillData { public int type; public int level; public float xp; }
 
     [Serializable]
     public class NeedData { public int type; public float value; }

@@ -8,7 +8,7 @@
 - [x] Modo construcción básico (grid + snap + rotación)
 - [x] Guardado local en JSON
 
-## Fase 2 — Loop jugable (actual)
+## Fase 2 — Loop jugable (completada)
 - [x] Interacción táctil real en Android (tap para mover/usar muebles)
 - [x] Cámara orbital táctil (orbita, pinch zoom, pan) y controles en editor
 - [x] UI de necesidades (barras estilo Sims con color por nivel)
@@ -17,12 +17,15 @@
 - [x] Animación procedural básica (bob al caminar, respiración en idle)
 - [ ] Sonido ambiente y música
 
-## Fase 3 — Mundo vivo
-- [ ] Economía: dinero, trabajos, compras de muebles
-- [ ] NPCs independientes con rutinas diarias
-- [ ] Sistema de conversación simple (opciones de diálogo)
-- [ ] Habilidades que suben con la práctica
-- [ ] Eventos del calendario (días de descanso, pagos)
+## Fase 3 — Mundo vivo (actual)
+- [x] Economía: dinero con eventos para UI y guardado
+- [x] Trabajos: horario, conmutar al punto de trabajo, pago por hora
+- [x] Calendario: días de la semana, fin de semana y festivos configurables
+- [x] NPCs independientes con rutinas diarias (deambular, usar muebles, dormir, conversar)
+- [x] Sistema de conversación por turnos con temas y relación por NPC
+- [x] Habilidades que suben con la práctica (muebles que entrenan, Carisma al conversar)
+- [ ] Tienda de muebles conectada a Economía (usar `price` de PlaceableObject + TrySpend)
+- [ ] Menú de empleos con requisitos de nivel de habilidad
 
 ## Fase 4 — Contenido y pulido
 - [ ] Editor de casa completo (paredes, pisos, múltiples habitaciones)
