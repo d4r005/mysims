@@ -1,6 +1,6 @@
 # Hoja de ruta MySims
 
-## Fase 1 — Prototipo base (actual)
+## Fase 1 — Prototipo base (completada)
 - [x] Sistema de tiempo (día/noche, velocidad)
 - [x] Sistema de necesidades (5 necesidades con decaimiento)
 - [x] IA del personaje (FSM: detectar necesidad → caminar → usar objeto)
@@ -8,13 +8,14 @@
 - [x] Modo construcción básico (grid + snap + rotación)
 - [x] Guardado local en JSON
 
-## Fase 2 — Loop jugable
-- [ ] Interacción táctil real en Android (tap para mover, pinch para zoom)
-- [ ] UI de necesidades (barras estilo Sims) con TextMeshPro
-- [ ] Restaurar muebles colocados al cargar partida (registro de prefabs por nombre)
-- [ ] Animaciones básicas (idle, caminar, sentarse)
-- [ ] Cámara orbital táctil
-- [] Sonido ambiente y música
+## Fase 2 — Loop jugable (actual)
+- [x] Interacción táctil real en Android (tap para mover/usar muebles)
+- [x] Cámara orbital táctil (orbita, pinch zoom, pan) y controles en editor
+- [x] UI de necesidades (barras estilo Sims con color por nivel)
+- [x] Controles de velocidad del tiempo (pausa / x1 / x2 / x4)
+- [x] Restaurar muebles colocados al cargar partida (PrefabRegistry por nombre)
+- [x] Animación procedural básica (bob al caminar, respiración en idle)
+- [ ] Sonido ambiente y música
 
 ## Fase 3 — Mundo vivo
 - [ ] Economía: dinero, trabajos, compras de muebles

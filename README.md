@@ -2,7 +2,7 @@
 
 Juego de simulación social estilo *Los Sims* para **Android**, construido con **Unity 2022.3 LTS (C#)**.
 
-## Estado actual: Fase 1 (prototipo base)
+## Estado actual: Fase 2 (loop jugable en móvil)
 
 Sistemas ya implementados como código base:
 
@@ -13,7 +13,12 @@ Sistemas ya implementados como código base:
 | 🚶 IA del personaje | `NPC/NPCController.cs` | FSM: detecta la necesidad más baja, camina al objeto que la resuelve y lo usa |
 | 🛋️ Objetos interactivos | `Building/PlaceableObject.cs` | Muebles que satisfacen necesidades (cama, refri, ducha, TV...) |
 | 🏗️ Construcción | `Building/GridPlacement.cs` | Colocación de muebles en cuadrícula con snap y rotación (tecla R o botón táctil) |
-| 💾 Guardado | `Save/SaveManager.cs` | Partida local en JSON, se guarda al pausar/cerrar la app en Android |
+| 💾 Guardado | `Save/SaveManager.cs` | Partida local en JSON + restauración de muebles colocados (vía `PrefabRegistry`) |
+| 📱 Entrada táctil | `Input/TouchInputController.cs` | Tap para mover al personaje o usar un mueble (también con mouse en editor) |
+| 🎥 Cámara orbital | `Camera/TouchCameraController.cs` | Orbita con un dedo, zoom pinch con dos, pan; rueda/botón derecho en editor |
+| 📊 UI necesidades | `UI/NeedsUIController.cs` | Barras estilo Sims con color por nivel (verde/amarillo/rojo) |
+| ⏩ Controles de tiempo | `UI/TimeControlsUI.cs` | Botones pausa / x1 / x2 / x4 |
+| 🏃 Animación procedural | `NPC/SimpleLocomotion.cs` | Bob al caminar, respiración en idle, giro suave (sin necesidad de rig) |
 
 ## Cómo abrir el proyecto
 
@@ -35,10 +40,13 @@ Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para las fases completas (interacción 
 
 ```
 Assets/Scripts/
-├── Core/       GameManager, TimeSystem (reloj del juego)
+├── Core/       GameManager, TimeSystem, PrefabRegistry
 ├── Needs/      Sistema de necesidades (el corazón del gameplay)
-├── NPC/        IA de movimiento y decisiones
+├── NPC/        IA de decisiones + animación procedural
 ├── Building/   Colocación de objetos y modo construcción
+├── Input/      Entrada táctil (tap para mover/usar)
+├── Camera/     Cámara orbital táctil
+├── UI/         Barras de necesidad y controles de tiempo
 └── Save/       Serialización de la partida
 ```
 

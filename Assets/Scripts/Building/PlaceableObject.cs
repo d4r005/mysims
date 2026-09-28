@@ -18,6 +18,9 @@ namespace MySims
         public string displayName = "Mueble";
         public Transform interactionPoint;
 
+        /// <summary>true si lo colocó el jugador en modo construcción (se guarda en la partida).</summary>
+        public bool placedByPlayer;
+
         NPCController currentUser;
 
         void OnEnable() => All.Add(this);

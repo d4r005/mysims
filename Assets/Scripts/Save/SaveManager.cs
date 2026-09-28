@@ -27,12 +27,15 @@ namespace MySims
                 data.needs.Add(new NeedData { type = (int)need.type, value = need.value });
 
             foreach (var obj in PlaceableObject.All)
+            {
+                if (!obj.placedByPlayer) continue; // los muebles de la escena no se guardan
                 data.placedObjects.Add(new PlacedObjectData
                 {
-                    prefabName = obj.name.Replace("(Clone)", ""),
+                    prefabName = obj.name.Replace("(Clone)", "").Trim(),
                     position = ToSerializable(obj.transform.position),
                     rotationY = obj.transform.eulerAngles.y
                 });
+            }
 
             File.WriteAllText(SavePath, JsonUtility.ToJson(data, true));
             Debug.Log($"Partida guardada en {SavePath}");
@@ -63,7 +66,23 @@ namespace MySims
                 var need = gm.playerNeeds.GetNeed((NeedType)nd.type);
                 if (need != null) need.value = nd.value;
             }
-            // Nota: los muebles colocados se restauran en la fase 2 (hace falta un registro de prefabs)
+
+            // Restaurar muebles colocados por el jugador
+            if (PrefabRegistry.Instance != null)
+            {
+                foreach (var po in data.placedObjects)
+                {
+                    var prefab = PrefabRegistry.Instance.GetPrefab(po.prefabName);
+                    if (prefab == null)
+                    {
+                        Debug.LogWarning($"Save: prefab no encontrado en el registro: {po.prefabName}");
+                        continue;
+                    }
+                    var placed = Instantiate(prefab, FromSerializable(po.position), Quaternion.Euler(0f, po.rotationY, 0f));
+                    var placeable = placed.GetComponent<PlaceableObject>();
+                    if (placeable != null) placeable.placedByPlayer = true;
+                }
+            }
         }
 
         static Vector3Serializable ToSerializable(Vector3 v) =>

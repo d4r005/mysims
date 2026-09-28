@@ -16,9 +16,13 @@ namespace MySims
         public float cellSize = 1f;
         public float rotationStep = 90f;
 
+        public static GridPlacement Instance { get; private set; }
+
         public bool BuildModeActive { get; private set; }
 
         GameObject ghost;  // vista previa fantasma
+
+        void Awake() { Instance = this; }
 
         void Update()
         {
@@ -60,7 +64,9 @@ namespace MySims
 
         void PlaceObject(Vector3 point)
         {
-            Instantiate(objectToPlace, point, ghost != null ? ghost.transform.rotation : Quaternion.identity);
+            var placed = Instantiate(objectToPlace, point, ghost != null ? ghost.transform.rotation : Quaternion.identity);
+            var placeable = placed.GetComponent<PlaceableObject>();
+            if (placeable != null) placeable.placedByPlayer = true; // solo estos se guardan
         }
 
         public void EnterBuildMode(GameObject prefab)
