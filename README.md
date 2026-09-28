@@ -2,7 +2,7 @@
 
 Juego de simulación social estilo *Los Sims* para **Android**, construido con **Unity 2022.3 LTS (C#)**.
 
-## Estado actual: Fase 4 + mundo global (60 ciudades) + las 40 expansiones de Sims 2/3/4 mapeadas a sistemas
+## Estado actual: las 40/40 expansiones + mundo global + arte base procedural + escena jugable en un clic
 
 Sistemas ya implementados como código base:
 
@@ -19,6 +19,15 @@ Sistemas ya implementados como código base:
 | 📊 UI necesidades | `UI/NeedsUIController.cs` | Barras estilo Sims con color por nivel (verde/amarillo/rojo) |
 | ⏩ Controles de tiempo | `UI/TimeControlsUI.cs` | Botones pausa / x1 / x2 / x4 |
 | 🏃 Animación procedural | `NPC/SimpleLocomotion.cs` | Bob al caminar, respiración en idle, giro suave (sin necesidad de rig) |
+
+## Puesta en marcha rápida (arte incluido)
+
+El proyecto genera su propio arte placeholder y la escena completa desde el editor:
+
+1. Abre el proyecto en Unity 2022.3 LTS.
+2. En la barra de menú: **MySims → 1. Generar prefabs base** (crea muebles, mascotas, niño, robot y pared en `Assets/Generated`).
+3. Luego **MySims → 2. Crear escena base** (crea `Assets/Scenes/Main.unity` con todos los sistemas, zonas de Monterrey/Cancún/NeoCiudad, vecinos, mascota, NavMesh y UI de barras).
+4. Dale Play. Reemplaza después los cubos por modelos reales cuando quieras.
 
 ## Cómo abrir el proyecto
 
@@ -52,6 +61,8 @@ Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para las fases y [`docs/EXPANSIONS.md`]
 | 👻 Más allá | `Family/AfterlifeSystem.cs` | Vida y Más Allá |
 | ✈️ Actividades de viaje | `World/VacationActivity.cs` | Bon Voyage, Vida Isleña, Aventura en la Isla, A la Aventura |
 | 👑 Dinastías | `Family/FamilySystem.cs` (generation, legacyScore) | Dinastías y Linajes, Menuda Familia, Creciendo en Familia |
+| 🤖 Hacia el Futuro | `Future/FutureSystem.cs` + `Future/RobotCompanion.cs` | La expansión 40: NeoCiudad, máquina del tiempo con intereses y robots que ayudan en casa |
+| 🎨 Arte procedural | `Editor/MySimsAssetBuilder.cs` | Prefabs base y escena completa generados desde el menú MySims del editor |
 
 **Novedades Fase 3:**
 
@@ -88,7 +99,8 @@ Assets/Scripts/
 ├── Input/      Entrada táctil (tap para mover/usar)
 ├── Camera/     Cámara orbital táctil
 ├── UI/         Barras de necesidad y controles de tiempo
-└── Save/       Serialización de la partida
+├── Save/       Serialización de la partida
+└── Editor/     Menú MySims: generador de prefabs y constructor de escena
 ```
 
 ## Licencia

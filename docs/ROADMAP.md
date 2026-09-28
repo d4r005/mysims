@@ -57,8 +57,11 @@
       sobrenatural (vampiros/hombres lobo/hadas/brujas), hobbies/clubes, vivienda compartida,
       ecologia, rancho/caballos/cultivos, instituto, mas alla/fantasmas, actividades de viaje
       (buceo, esqui, excursion, hotel), dinastias/generaciones, citas romanticas
-- [ ] "Hacia el Futuro" (Into the Future): unico pendiente, necesita una zona sci-fi nueva
-      con robots y viaje temporal, es contenido visual mas que un sistema de datos
+- [x] "Hacia el Futuro" (Into the Future): FutureSystem con maquina del tiempo
+      (viajar dias al futuro con interes del ahorro), robots companeros que ayudan
+      en casa y la zona NeoCiudad que desbloquea el futuro al llegar
+- [x] Arte base procedural: menú MySims en el editor genera 13 prefabs y monta la
+      escena jugable completa (sistemas, zonas, vecinos, mascota, NavMesh y UI)
 
 ## Fase 5 — Publicación
 - [ ] Cuenta Google Play Developer (pago único 25 USD)

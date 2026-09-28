@@ -31,7 +31,7 @@ sistemas propios y gratuitos.
 | 8 | Y las Cuatro Estaciones | Clima, festividades | `World/SeasonSystem.cs` |
 | 9 | Movida en la Universidad | Universidad, vida social | `Education/UniversitySystem.cs` |
 | 10 | Aventura en la Isla | Islas, buceo | `World/VacationActivity.cs` (Snorkel, Excursion) |
-| 11 | Hacia el Futuro | Viajes al futuro, robots | *pendiente — requiere una zona sci-fi nueva, ver Roadmap* |
+| 11 | Hacia el Futuro | Viajes al futuro, robots | `Future/FutureSystem.cs` + `Future/RobotCompanion.cs` + zona NeoCiudad |
 
 ## Los Sims 4 (21 expansiones)
 
@@ -66,6 +66,6 @@ sistemas propios y gratuitos.
 - El guardado (`Save/SaveManager.cs`) ya incluye los campos principales de cada
   pack (estacion, clima, negocio, fama, forma sobrenatural, ecologia, vivienda,
   generacion familiar).
-- Solo **"Hacia el Futuro"** queda pendiente: es el unico tema que necesita
-  contenido visual completamente nuevo (una zona futurista con robots), no solo
-  un sistema de datos.
+- Las **40/40** expansiones ya están mapeadas a sistemas funcionales.
+- El arte placeholder se genera desde el editor: menú **MySims** en Unity
+  (`Assets/Editor/MySimsAssetBuilder.cs`).

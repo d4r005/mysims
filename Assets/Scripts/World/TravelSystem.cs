@@ -64,6 +64,7 @@ namespace MySims
             MovePlayerToSpawn(zone);
             OnTravel?.Invoke(from, zone);
             AchievementSystem.Instance?.NotifyTraveled();
+            if (id == "neociudad") FutureSystem.Instance?.UnlockFuture(); // pack Hacia el Futuro
             return true;
         }
 

@@ -30,6 +30,8 @@ namespace MySims
         public float monthlyRent;
         public int familyGeneration;
         public float legacyScore;
+        public bool futureUnlocked;
+        public int timeJumps;
         public Vector3Serializable playerPosition;
         public List<NeedData> needs = new List<NeedData>();
         public List<SkillData> skills = new List<SkillData>();

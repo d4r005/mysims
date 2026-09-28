@@ -84,6 +84,7 @@ namespace MySims
             if (EcoSystem.Instance != null) data.ecoScore = EcoSystem.Instance.ecoScore;
             if (HousingSystem.Instance != null) { data.housingType = (int)HousingSystem.Instance.housingType; data.monthlyRent = HousingSystem.Instance.monthlyRent; }
             if (FamilySystem.Instance != null) { data.familyGeneration = FamilySystem.Instance.generation; data.legacyScore = FamilySystem.Instance.legacyScore; }
+            if (FutureSystem.Instance != null) { data.futureUnlocked = FutureSystem.Instance.futureUnlocked; data.timeJumps = FutureSystem.Instance.timeJumps; }
 
             foreach (var wall in WallPiece.All)
                 data.walls.Add(new WallData
@@ -214,6 +215,7 @@ namespace MySims
             if (EcoSystem.Instance != null) EcoSystem.Instance.ecoScore = data.ecoScore;
             if (HousingSystem.Instance != null) { HousingSystem.Instance.housingType = (HousingType)data.housingType; HousingSystem.Instance.monthlyRent = data.monthlyRent; }
             if (FamilySystem.Instance != null) { FamilySystem.Instance.generation = data.familyGeneration > 0 ? data.familyGeneration : 1; FamilySystem.Instance.legacyScore = data.legacyScore; }
+            if (FutureSystem.Instance != null) { FutureSystem.Instance.futureUnlocked = data.futureUnlocked; FutureSystem.Instance.timeJumps = data.timeJumps; }
 
             // Muros construidos
             if (PrefabRegistry.Instance != null && WallBuilder.Instance != null)

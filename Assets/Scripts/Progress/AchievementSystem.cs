@@ -43,7 +43,10 @@ namespace MySims
             new Achievement { id = "explorador",    title = "Explorador",          description = "Completa una excursion de aventura." },
             new Achievement { id = "eco",           title = "Guardian verde",      description = "Alcanza 80 o mas de puntaje ecologico." },
             new Achievement { id = "cita_romantica",title = "Noche romantica",     description = "Sal en una cita con tu pareja." },
-            new Achievement { id = "dinastia",      title = "Dinastia familiar",   description = "Llega a la generacion 3 de tu familia." }
+            new Achievement { id = "dinastia",      title = "Dinastia familiar",   description = "Llega a la generacion 3 de tu familia." },
+            new Achievement { id = "hacia_el_futuro", title = "Bienvenido al futuro", description = "Descubre NeoCiudad." },
+            new Achievement { id = "viajero_tiempo", title = "Viajero del tiempo",  description = "Salta al futuro con la maquina del tiempo." },
+            new Achievement { id = "dueno_robot",    title = "Dueno de robot",      description = "Compra tu primer robot companero." }
         };
 
         public event Action<Achievement> OnUnlocked;

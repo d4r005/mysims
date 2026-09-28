@@ -78,7 +78,10 @@ namespace MySims
             new LocationInfo { id = "nairobi",      displayName = "Nairobi",            country = "Kenia",       type = LocationType.Campo,  travelCost = 1100f, travelHours = 14f, description = "Safari y la sabana a una hora del centro." },
             new LocationInfo { id = "sidney",       displayName = "Sidney",            country = "Australia",  type = LocationType.Playa,  travelCost = 1300f, travelHours = 16f, description = "La Opera y Bondi Beach." },
             new LocationInfo { id = "auckland",     displayName = "Auckland",           country = "Nueva Zelanda", type = LocationType.Ciudad, travelCost = 1350f, travelHours = 16f, description = "Veleros, volcanes y maori culture." },
-            new LocationInfo { id = "borabora",     displayName = "Bora Bora",          country = "Polinesia",  type = LocationType.Playa,  travelCost = 1500f, travelHours = 18f, description = "Bungalows sobre agua turquesa." }
+            new LocationInfo { id = "borabora",     displayName = "Bora Bora",          country = "Polinesia",  type = LocationType.Playa,  travelCost = 1500f, travelHours = 18f, description = "Bungalows sobre agua turquesa." },
+
+            // ===== El futuro. Pack Hacia el Futuro =====
+            new LocationInfo { id = "neociudad",    displayName = "NeoCiudad",         country = "Futuro",     type = LocationType.Ciudad, travelCost = 2000f, travelHours = 20f, description = "La ciudad del manana. Robots, hologramas y la maquina del tiempo." }
         };
 
         public static LocationInfo Get(string id) => Locations.Find(l => l.id == id);
