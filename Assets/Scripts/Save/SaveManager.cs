@@ -46,6 +46,32 @@ namespace MySims
             if (AchievementSystem.Instance != null)
                 data.achievements = new System.Collections.Generic.List<string>(AchievementSystem.Instance.Unlocked);
 
+            if (UniversitySystem.Instance != null)
+            {
+                data.university.enrolled = UniversitySystem.Instance.Enrolled;
+                data.university.graduated = UniversitySystem.Instance.Graduated;
+                data.university.careerId = UniversitySystem.Instance.currentCareerId;
+                data.university.credits = UniversitySystem.Instance.credits;
+            }
+
+            if (FamilySystem.Instance != null)
+            {
+                data.family.stage = (int)FamilySystem.Instance.stage;
+                data.family.partnerName = FamilySystem.Instance.partnerName;
+                foreach (var c in FamilySystem.Instance.children)
+                    data.family.children.Add(new ChildData { name = c.name, ageDays = c.ageDays });
+            }
+
+            foreach (var pet in Pet.All)
+                data.pets.Add(new PetData
+                {
+                    species = (int)pet.species,
+                    petName = pet.petName,
+                    carino = pet.carino,
+                    hambre = pet.hambre,
+                    position = ToSerializable(pet.transform.position)
+                });
+
             foreach (var wall in WallPiece.All)
                 data.walls.Add(new WallData
                 {
@@ -139,6 +165,29 @@ namespace MySims
                 ch.pantsColor = ParseColor(data.pantsColor, ch.pantsColor);
                 ch.Apply();
             }
+
+            // Universidad
+            if (UniversitySystem.Instance != null)
+            {
+                UniversitySystem.Instance.Enrolled = data.university.enrolled;
+                UniversitySystem.Instance.Graduated = data.university.graduated;
+                UniversitySystem.Instance.currentCareerId = data.university.careerId;
+                UniversitySystem.Instance.credits = data.university.credits;
+            }
+
+            // Familia
+            if (FamilySystem.Instance != null)
+            {
+                FamilySystem.Instance.stage = (FamilyStage)data.family.stage;
+                FamilySystem.Instance.partnerName = data.family.partnerName;
+                foreach (var c in data.family.children)
+                    FamilySystem.Instance.TryRestoreChild(c.name, c.ageDays);
+            }
+
+            // Mascotas
+            if (PetSystem.Instance != null)
+                foreach (var pd in data.pets)
+                    PetSystem.Instance.RestorePet(pd);
 
             // Muros construidos
             if (PrefabRegistry.Instance != null && WallBuilder.Instance != null)

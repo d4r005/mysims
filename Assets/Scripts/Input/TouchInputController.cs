@@ -65,6 +65,17 @@ namespace MySims
 
             Ray ray = Camera.main.ScreenPointToRay(screenPos);
 
+            // 0. ¿tap en una mascota? Se acaricia
+            if (Physics.Raycast(ray, out RaycastHit petHit, 100f, objectMask))
+            {
+                var pet = petHit.collider.GetComponentInParent<Pet>();
+                if (pet != null)
+                {
+                    PetSystem.Instance?.PetNearest();
+                    return;
+                }
+            }
+
             // 1. ¿tap en un objeto interactivo?
             if (Physics.Raycast(ray, out RaycastHit objHit, 100f, objectMask))
             {

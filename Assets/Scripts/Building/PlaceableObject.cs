@@ -27,6 +27,10 @@ namespace MySims
         [Tooltip("XP por segundo de uso")]
         public float skillXpPerUse = 1f;
 
+        [Header("Mascotas")]
+        [Tooltip("Si es true solo las mascotas pueden usarlo, ej. comedero.")]
+        public bool isForPets;
+
         [Header("Tienda")]
         [Tooltip("Precio de compra en modo construcción. 0 = gratis")]
         public float price;
@@ -48,7 +52,7 @@ namespace MySims
 
         public static PlaceableObject FindClosestForNeed(NeedType type, Vector3 from)
         {
-            return All.Where(o => o.satisfies == type)
+            return All.Where(o => o.satisfies == type && o.isForPets == false)
                       .OrderBy(o => Vector3.Distance(o.transform.position, from))
                       .FirstOrDefault();
         }

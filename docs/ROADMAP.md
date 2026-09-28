@@ -42,8 +42,15 @@
 - [x] Viajes con costo en dinero y horas de juego; pasaje a casa a mitad de precio
 - [x] Elegir en qué lugar del mundo vive el sim (TravelSystem.SetHome)
 - [x] Mapa UI agrupado por país con costos y botón de vivir aquí (WorldMapUI)
+- [x] Playas y todo el mundo: 60 ubicaciones de America, Europa, Asia, Africa y Oceania
 - [ ] Playas con actividades especiales: nadar, bronceado, volley (nuevos PlaceableObject)
 - [ ] Clima por país y más contenido visual por zona
+
+## Packs de contenido estilo expansiones
+- [x] Universidad: 4 carreras con colegiatura, clases por horario, creditos y graduacion con titulo que desbloquea empleos de nivel alto como Medico
+- [x] Vida familiar: etapas Soltero, Cortejo, Comprometido y Casado con costos de anillo y boda, hijos que crecen cada dia
+- [x] Mascotas: perros y gatos con hambre y carino, siguen al dueno, comen de su comedero y se acarician con un tap
+- [ ] Universidades por ciudad, mascotas exoticas por país y eventos familiares, proxima ronda
 
 ## Fase 5 — Publicación
 - [ ] Cuenta Google Play Developer (pago único 25 USD)

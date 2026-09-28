@@ -82,9 +82,10 @@ namespace MySims
                     break;
 
                 case RoutineActivity.UsarObjeto:
-                    if (PlaceableObject.All.Count > 0)
+                    var usable = PlaceableObject.All.FindAll(o => o.isForPets == false);
+                    if (usable.Count > 0)
                     {
-                        var obj = PlaceableObject.All[UnityEngine.Random.Range(0, PlaceableObject.All.Count)];
+                        var obj = usable[UnityEngine.Random.Range(0, usable.Count)];
                         if (obj.interactionPoint != null)
                             agent.SetDestination(obj.interactionPoint.position);
                     }

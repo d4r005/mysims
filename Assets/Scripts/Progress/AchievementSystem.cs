@@ -28,7 +28,11 @@ namespace MySims
             new Achievement { id = "vida_social",   title = "Vida social",         description = "Alcanza relacion 50 o mas con un vecino." },
             new Achievement { id = "experto",        title = "Experto",            description = "Sube cualquier habilidad a nivel 5." },
             new Achievement { id = "mochilero",     title = "Mochilero",          description = "Visita 3 lugares del mundo." },
-            new Achievement { id = "constructor",   title = "Constructor",        description = "Construye tu primera pared." }
+            new Achievement { id = "constructor",   title = "Constructor",        description = "Construye tu primera pared." },
+            new Achievement { id = "graduado",      title = "Graduado",            description = "Termina una carrera universitaria." },
+            new Achievement { id = "boda",          title = "La gran boda",         description = "Casa-te con tu pareja." },
+            new Achievement { id = "familia",       title = "Familia numerosa",    description = "Ten 2 hijos o mas." },
+            new Achievement { id = "mascota",       title = "Mejor amigo peludo",  description = "Lleva el carino de tu mascota a 80 o mas." }
         };
 
         public event Action<Achievement> OnUnlocked;

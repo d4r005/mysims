@@ -13,6 +13,9 @@ namespace MySims
         public string currentLocationId;
         public string homeLocationId;
         public string skinColor, hairColor, shirtColor, pantsColor;
+        public UniversityData university = new UniversityData();
+        public FamilyData family = new FamilyData();
+        public List<PetData> pets = new List<PetData>();
         public Vector3Serializable playerPosition;
         public List<NeedData> needs = new List<NeedData>();
         public List<SkillData> skills = new List<SkillData>();
@@ -31,6 +34,34 @@ namespace MySims
 
     [Serializable]
     public class SkillData { public int type; public int level; public float xp; }
+
+    [Serializable]
+    public class UniversityData
+    {
+        public bool enrolled, graduated;
+        public string careerId;
+        public float credits;
+    }
+
+    [Serializable]
+    public class FamilyData
+    {
+        public int stage;
+        public string partnerName;
+        public List<ChildData> children = new List<ChildData>();
+    }
+
+    [Serializable]
+    public class ChildData { public string name; public int ageDays; }
+
+    [Serializable]
+    public class PetData
+    {
+        public int species;
+        public string petName;
+        public float carino, hambre;
+        public Vector3Serializable position;
+    }
 
     [Serializable]
     public class WallData

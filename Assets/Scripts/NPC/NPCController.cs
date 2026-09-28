@@ -63,6 +63,13 @@ namespace MySims
                 return;
             }
 
+            // La universidad tiene prioridad despues del trabajo
+            if (UniversitySystem.Instance != null && UniversitySystem.Instance.TryEngage(this))
+            {
+                State = UniversitySystem.Instance.IsInClass ? NPCState.Working : NPCState.Walking;
+                return;
+            }
+
             if (NeedsSystem.Instance == null) return;
             var need = NeedsSystem.Instance.GetLowestNeed();
             if (need == null || need.value > minNeedThreshold) return;
@@ -89,6 +96,14 @@ namespace MySims
                 return;
             }
 
+            // ¿Llegó a la universidad?
+            if (UniversitySystem.Instance != null && UniversitySystem.Instance.IsCommuting(this))
+            {
+                UniversitySystem.Instance.Arrived(this);
+                State = NPCState.Working;
+                return;
+            }
+
             if (currentTarget != null)
             {
                 currentTarget.StartUse(this);
@@ -99,11 +114,15 @@ namespace MySims
 
         void HandleWorking()
         {
-            if (JobSystem.Instance == null || !JobSystem.Instance.IsWorkHour)
-            {
-                JobSystem.Instance?.ClockOut();
-                State = NPCState.Idle;
-            }
+            bool jobActive = JobSystem.Instance != null && JobSystem.Instance.IsAtWork;
+            bool classActive = UniversitySystem.Instance != null && UniversitySystem.Instance.IsInClass;
+
+            if (jobActive) return;
+            if (classActive) return;
+
+            JobSystem.Instance?.ClockOut();
+            UniversitySystem.Instance?.ClockOut();
+            State = NPCState.Idle;
         }
 
         void HandleUsing()

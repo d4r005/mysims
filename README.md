@@ -2,7 +2,7 @@
 
 Juego de simulación social estilo *Los Sims* para **Android**, construido con **Unity 2022.3 LTS (C#)**.
 
-## Estado actual: Fase 4 (editor de casa, personalización, logros y mapa mundial)
+## Estado actual: Fase 4 + mundo global + packs de contenido (Universidad, Familia, Mascotas)
 
 Sistemas ya implementados como código base:
 
@@ -52,7 +52,10 @@ Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para las fases completas (editor de cas
 | 🏖️ Zonas | `World/LocationZone.cs` | Cada ciudad/playa es una zona con contenido propio y spawn |
 | 🧱 Editor de casa | `Building/WallBuilder.cs` | Paredes celda a celda con costo por metro y modo demoler |
 | 🎨 Personalización | `Character/CharacterCustomizer.cs` | Piel, cabello, playera y pantalón; se guarda como hex |
-| 🏆 Logros | `Progress/AchievementSystem.cs` | 6 logros conectados a todos los sistemas, con toasts para UI |
+| 🏆 Logros | `Progress/AchievementSystem.cs` | 10 logros conectados a todos los sistemas, con toasts para UI |
+| 🎓 Universidad | `Education/UniversitySystem.cs` | 4 carreras, inscripción con colegiatura, clases con créditos y título que desbloquea empleos |
+| 💍 Vida familiar | `Family/FamilySystem.cs` | Cortejo, compromiso, boda e hijos que crecen día a día |
+| 🐶 Mascotas | `Pets/Pet.cs` + `Pets/PetSystem.cs` | Perros y gatos con hambre y cariño, siguen al sim, adopción y acariciar con tap |
 
 ## Estructura
 
