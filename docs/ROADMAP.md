@@ -17,22 +17,33 @@
 - [x] Animación procedural básica (bob al caminar, respiración en idle)
 - [ ] Sonido ambiente y música
 
-## Fase 3 — Mundo vivo (actual)
+## Fase 3 — Mundo vivo (completada)
 - [x] Economía: dinero con eventos para UI y guardado
 - [x] Trabajos: horario, conmutar al punto de trabajo, pago por hora
 - [x] Calendario: días de la semana, fin de semana y festivos configurables
 - [x] NPCs independientes con rutinas diarias (deambular, usar muebles, dormir, conversar)
 - [x] Sistema de conversación por turnos con temas y relación por NPC
 - [x] Habilidades que suben con la práctica (muebles que entrenan, Carisma al conversar)
-- [ ] Tienda de muebles conectada a Economía (usar `price` de PlaceableObject + TrySpend)
-- [ ] Menú de empleos con requisitos de nivel de habilidad
+- [x] Tienda de muebles conectada a Economía (StoreUI + TrySpend al comprar)
+- [x] Menú de empleos con requisitos de nivel de habilidad (JobCatalog + JobsMenuUI)
 
-## Fase 4 — Contenido y pulido
-- [ ] Editor de casa completo (paredes, pisos, múltiples habitaciones)
-- [ ] Personalización del personaje (colores, ropa)
-- [ ] Logros y misiones diarias
+## Fase 4 — Contenido y pulido (actual)
+- [x] Editor de casa: paredes celda a celda con costo y modo demoler (WallBuilder)
+- [x] Personalización del personaje (colores de piel, cabello y ropa, guardado en la partida)
+- [x] Logros conectados a todos los sistemas (AchievementSystem)
+- [ ] Pisos y múltiples habitaciones
+- [ ] Misiones diarias
 - [ ] Guardado en la nube (opcional)
 - [ ] Optimización móvil (draw calls, LOD, occlusion culling)
+
+## Fase 4.5 — Mundo global (en progreso)
+- [x] Catálogo mundial: Mexico. Ciudad de Mexico, Monterrey, El Carmen NL, Guadalajara, Cancun, Acapulco, Tulum. Francia. Paris, Niza, Marsella. Y mas
+- [x] Zonas de ubicación por escena con contenido y spawn propio (LocationZone)
+- [x] Viajes con costo en dinero y horas de juego; pasaje a casa a mitad de precio
+- [x] Elegir en qué lugar del mundo vive el sim (TravelSystem.SetHome)
+- [x] Mapa UI agrupado por país con costos y botón de vivir aquí (WorldMapUI)
+- [ ] Playas con actividades especiales: nadar, bronceado, volley (nuevos PlaceableObject)
+- [ ] Clima por país y más contenido visual por zona
 
 ## Fase 5 — Publicación
 - [ ] Cuenta Google Play Developer (pago único 25 USD)

@@ -2,7 +2,7 @@
 
 Juego de simulación social estilo *Los Sims* para **Android**, construido con **Unity 2022.3 LTS (C#)**.
 
-## Estado actual: Fase 3 (mundo vivo: economía, NPCs y habilidades)
+## Estado actual: Fase 4 (editor de casa, personalización, logros y mapa mundial)
 
 Sistemas ya implementados como código base:
 
@@ -46,6 +46,13 @@ Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para las fases completas (editor de cas
 | 🚶 NPC con rutina | `NPC/NPCRoutine.cs` | NPCs secundarios con horario diario (deambular, usar muebles, dormir, conversar) |
 | 💬 Diálogos | `Social/DialogueSystem.cs` | Conversaciones por turnos con temas y relación por NPC |
 | 🌟 Habilidades | `Skills/SkillSystem.cs` | 5 habilidades con niveles y XP; los muebles pueden entrenar |
+| 🛒 Tienda | `UI/StoreUI.cs` | Catálogo generado del PrefabRegistry, compra con validación de dinero |
+| 💼 Menú de empleos | `UI/JobsMenuUI.cs` | Ofertas con requisitos de habilidad, bloqueadas si no cumples |
+| 🗺️ Mapa mundial | `World/TravelSystem.cs` + `UI/WorldMapUI.cs` | Ubicaciones por país, viajes con costo y horas, elegir casa |
+| 🏖️ Zonas | `World/LocationZone.cs` | Cada ciudad/playa es una zona con contenido propio y spawn |
+| 🧱 Editor de casa | `Building/WallBuilder.cs` | Paredes celda a celda con costo por metro y modo demoler |
+| 🎨 Personalización | `Character/CharacterCustomizer.cs` | Piel, cabello, playera y pantalón; se guarda como hex |
+| 🏆 Logros | `Progress/AchievementSystem.cs` | 6 logros conectados a todos los sistemas, con toasts para UI |
 
 ## Estructura
 

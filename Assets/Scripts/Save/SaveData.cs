@@ -10,10 +10,15 @@ namespace MySims
         public float hour;
         public float money;
         public JobData job;
+        public string currentLocationId;
+        public string homeLocationId;
+        public string skinColor, hairColor, shirtColor, pantsColor;
         public Vector3Serializable playerPosition;
         public List<NeedData> needs = new List<NeedData>();
         public List<SkillData> skills = new List<SkillData>();
         public List<PlacedObjectData> placedObjects = new List<PlacedObjectData>();
+        public List<WallData> walls = new List<WallData>();
+        public List<string> achievements = new List<string>();
     }
 
     [Serializable]
@@ -26,6 +31,15 @@ namespace MySims
 
     [Serializable]
     public class SkillData { public int type; public int level; public float xp; }
+
+    [Serializable]
+    public class WallData
+    {
+        public string prefabName;
+        public Vector3Serializable position;
+        public float rotationY;
+        public Vector3Serializable scale;
+    }
 
     [Serializable]
     public class NeedData { public int type; public float value; }

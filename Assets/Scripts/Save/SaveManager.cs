@@ -29,8 +29,31 @@ namespace MySims
                     hourlyPay = JobSystem.Instance.currentJob.hourlyPay,
                     worksWeekend = JobSystem.Instance.currentJob.worksWeekend
                 } : null,
-                playerPosition = ToSerializable(gm.playerCharacter.transform.position)
+                playerPosition = ToSerializable(gm.playerCharacter.transform.position),
+                currentLocationId = TravelSystem.Instance != null ? TravelSystem.Instance.currentLocationId : "",
+                homeLocationId = TravelSystem.Instance != null ? TravelSystem.Instance.homeLocationId : ""
             };
+
+            if (CharacterCustomizer.Instance != null)
+            {
+                var ch = CharacterCustomizer.Instance;
+                data.skinColor = ColorUtility.ToHtmlStringRGB(ch.skinColor);
+                data.hairColor = ColorUtility.ToHtmlStringRGB(ch.hairColor);
+                data.shirtColor = ColorUtility.ToHtmlStringRGB(ch.shirtColor);
+                data.pantsColor = ColorUtility.ToHtmlStringRGB(ch.pantsColor);
+            }
+
+            if (AchievementSystem.Instance != null)
+                data.achievements = new System.Collections.Generic.List<string>(AchievementSystem.Instance.Unlocked);
+
+            foreach (var wall in WallPiece.All)
+                data.walls.Add(new WallData
+                {
+                    prefabName = wall.prefabName,
+                    position = ToSerializable(wall.transform.position),
+                    rotationY = wall.transform.eulerAngles.y,
+                    scale = ToSerializable(wall.transform.localScale)
+                });
 
             foreach (var need in gm.playerNeeds.needs)
                 data.needs.Add(new NeedData { type = (int)need.type, value = need.value });
@@ -98,6 +121,42 @@ namespace MySims
                 if (need != null) need.value = nd.value;
             }
 
+            // Ubicacion en el mundo y casa
+            if (TravelSystem.Instance != null)
+            {
+                TravelSystem.Instance.homeLocationId = data.homeLocationId;
+                if (!string.IsNullOrEmpty(data.currentLocationId))
+                    TravelSystem.Instance.TeleportTo(data.currentLocationId);
+            }
+
+            // Apariencia del personaje
+            if (CharacterCustomizer.Instance != null)
+            {
+                var ch = CharacterCustomizer.Instance;
+                ch.skinColor = ParseColor(data.skinColor, ch.skinColor);
+                ch.hairColor = ParseColor(data.hairColor, ch.hairColor);
+                ch.shirtColor = ParseColor(data.shirtColor, ch.shirtColor);
+                ch.pantsColor = ParseColor(data.pantsColor, ch.pantsColor);
+                ch.Apply();
+            }
+
+            // Muros construidos
+            if (PrefabRegistry.Instance != null && WallBuilder.Instance != null)
+                foreach (var w in data.walls)
+                {
+                    var prefab = PrefabRegistry.Instance.GetPrefab(w.prefabName);
+                    if (prefab == null) continue;
+                    var wall = Object.Instantiate(prefab, FromSerializable(w.position), Quaternion.Euler(0f, w.rotationY, 0f));
+                    wall.transform.localScale = FromSerializable(w.scale);
+                    var piece = wall.GetComponent<WallPiece>();
+                    if (piece == null) piece = wall.AddComponent<WallPiece>();
+                    piece.prefabName = w.prefabName;
+                }
+
+            // Logros
+            if (AchievementSystem.Instance != null)
+                AchievementSystem.Instance.RestoreUnlocked(data.achievements);
+
             // Restaurar muebles colocados por el jugador
             if (PrefabRegistry.Instance != null)
             {
@@ -121,5 +180,11 @@ namespace MySims
 
         static Vector3 FromSerializable(Vector3Serializable v) =>
             v == null ? Vector3.zero : new Vector3(v.x, v.y, v.z);
+
+        static Color ParseColor(string hex, Color fallback)
+        {
+            if (string.IsNullOrEmpty(hex)) return fallback;
+            return ColorUtility.TryParseHtmlString("#" + hex, out Color c) ? c : fallback;
+        }
     }
 }

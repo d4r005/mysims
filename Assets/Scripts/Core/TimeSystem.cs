@@ -54,6 +54,21 @@ namespace MySims
 
         public void SetSpeed(float multiplier) => speedMultiplier = Mathf.Clamp(multiplier, 1f, 8f);
 
+        /// <summary>Avanza el reloj varias horas. Usado por los viajes y esperas.</summary>
+        public void AdvanceHours(float hours)
+        {
+            if (hours <= 0f) return;
+            CurrentHour += hours;
+            while (CurrentHour >= 24f)
+            {
+                CurrentHour -= 24f;
+                CurrentDay++;
+                OnDayChanged?.Invoke(CurrentDay);
+            }
+            lastHour = Mathf.FloorToInt(CurrentHour);
+            OnHourChanged?.Invoke(lastHour);
+        }
+
         public void SetFromLoad(int day, float hour)
         {
             CurrentDay = day;
