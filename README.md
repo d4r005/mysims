@@ -25,9 +25,14 @@ Sistemas ya implementados como código base:
 El proyecto genera su propio arte placeholder y la escena completa desde el editor:
 
 1. Abre el proyecto en Unity 2022.3 LTS.
-2. En la barra de menú: **MySims → 1. Generar prefabs base** (crea muebles, mascotas, niño, robot y pared en `Assets/Generated`).
+2. En la barra de menú: **MySims → 1. Generar prefabs base** (crea muebles, personajes y mascotas en `Assets/Generated`, usando el arte low-poly incluido).
 3. Luego **MySims → 2. Crear escena base** (crea `Assets/Scenes/Main.unity` con todos los sistemas, zonas de Monterrey/Cancún/NeoCiudad, vecinos, mascota, NavMesh y UI de barras).
-4. Dale Play. Reemplaza después los cubos por modelos reales cuando quieras.
+4. Dale Play.
+
+**Arte incluido:** el repo ya trae 39 modelos low-poly CC0 de Kenney en `Assets/Art`:
+- `KenneyFurniture/`: cama, refri, ducha, TV, sofá, escritorio, librería, planta y más (21 FBX del Furniture Kit).
+- `KenneyCharacters/`: 18 personajes blocky para el sim, vecinos, niños y robots.
+Si un modelo falta, el generador usa cubos de respaldo automáticamente.
 
 ## Cómo abrir el proyecto
 

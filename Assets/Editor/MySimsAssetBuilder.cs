@@ -54,13 +54,46 @@ public static class MySimsAssetBuilder
         return prefab;
     }
 
+    // ---------- modelos Kenney ----------
+
+    /// <summary>Instancia un modelo FBX de Assets/Art como hijo del prefab, con collider por bounds.</summary>
+    static GameObject AttachModel(string folder, string modelName, Transform parent, float scale, System.Func<GameObject> fallback)
+    {
+        string path = $"Assets/Art/{folder}/{modelName}.fbx";
+        var fbx = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        if (fbx == null)
+        {
+            if (fallback != null) return fallback();
+            return null;
+        }
+
+        var model = Object.Instantiate(fbx);
+        model.name = "modelo";
+        model.transform.SetParent(parent);
+        model.transform.localPosition = Vector3.zero;
+        model.transform.localRotation = Quaternion.identity;
+        model.transform.localScale = Vector3.one * scale;
+
+        // Collider generado por los bounds visuales para que el raycast funcione
+        if (model.GetComponent<Collider>() == null)
+        {
+            var box = model.AddComponent<BoxCollider>();
+            var bounds = new Bounds(model.transform.position, Vector3.zero);
+            foreach (var r in model.GetComponentsInChildren<Renderer>()) bounds.Encapsulate(r.bounds);
+            box.center = model.transform.InverseTransformPoint(bounds.center);
+            Vector3 worldSize = bounds.size;
+            box.size = model.transform.InverseTransformDirection(worldSize);
+        }
+        return model;
+    }
+
     // ---------- muebles ----------
 
-    static GameObject BuildFurniture(string name, NeedType need, float price, Color color, SkillType skill, Vector3 size, bool forPets = false)
+    static GameObject BuildFurniture(string name, NeedType need, float price, Color color, SkillType skill, Vector3 size, string kenneyModel, float modelScale, bool forPets = false)
     {
         var root = new GameObject(name);
-        var mat = GetMat(name, color);
-        Cube("base", root.transform, Vector3.zero, size, mat);
+        AttachModel("KenneyFurniture", kenneyModel, root.transform, modelScale,
+            () => { var mat = GetMat(name, color); return Cube("base", root.transform, Vector3.zero, size, mat); });
 
         var placeable = root.AddComponent<PlaceableObject>();
         placeable.satisfies = need;
@@ -77,23 +110,39 @@ public static class MySimsAssetBuilder
         return root;
     }
 
-    static GameObject BuildCreature(string name, Color bodyColor, float height)
+    static GameObject BuildCreature(string name, Color bodyColor, float height, string characterModel = null)
     {
         var root = new GameObject(name);
-        var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        body.name = "body";
-        body.transform.SetParent(root.transform);
-        body.transform.localPosition = new Vector3(0f, height / 2f, 0f);
-        body.transform.localScale = new Vector3(height / 3f, height / 2f, height / 3f);
-        var mat = GetMat(name, bodyColor);
-        body.GetComponent<Renderer>().sharedMaterial = mat;
 
-        var head = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        head.name = "head";
-        head.transform.SetParent(root.transform);
-        head.transform.localPosition = new Vector3(0f, height, 0f);
-        head.transform.localScale = Vector3.one * height / 3.5f;
-        head.GetComponent<Renderer>().sharedMaterial = mat;
+        var model = characterModel != null
+            ? AttachModel("KenneyCharacters", characterModel, root.transform, height / 1.8f, null)
+            : null;
+
+        if (model == null)
+        {
+            // Respaldo en capsulas si no esta el kit de personajes
+            var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            body.name = "body";
+            body.transform.SetParent(root.transform);
+            body.transform.localPosition = new Vector3(0f, height / 2f, 0f);
+            body.transform.localScale = new Vector3(height / 3f, height / 2f, height / 3f);
+            var mat = GetMat(name, bodyColor);
+            body.GetComponent<Renderer>().sharedMaterial = mat;
+
+            var head = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            head.name = "head";
+            head.transform.SetParent(root.transform);
+            head.transform.localPosition = new Vector3(0f, height, 0f);
+            head.transform.localScale = Vector3.one * height / 3.5f;
+            head.GetComponent<Renderer>().sharedMaterial = mat;
+        }
+        else
+        {
+            var cap = model.AddComponent<CapsuleCollider>();
+            cap.height = height;
+            cap.radius = height / 4f;
+            cap.center = new Vector3(0f, height / 2f, 0f);
+        }
         return root;
     }
 
@@ -103,15 +152,17 @@ public static class MySimsAssetBuilder
         Directory.CreateDirectory(PrefabDir);
         Directory.CreateDirectory(MatDir);
 
-        // Muebles con placeholder art: cubos y capsulas, reemplazables por modelos reales
-        SavePrefab(BuildFurniture("Cama",     NeedType.Energia,   150f, new Color(0.9f, 0.9f, 0.95f), SkillType.Creatividad, new Vector3(1f, 0.5f, 2f)), "Cama");
-        SavePrefab(BuildFurniture("Refri",    NeedType.Hambre,    200f, new Color(0.85f, 0.85f, 0.9f),  SkillType.Cocina,     new Vector3(0.8f, 1.8f, 0.8f)), "Refri");
-        SavePrefab(BuildFurniture("Ducha",    NeedType.Higiene,   120f, new Color(0.5f, 0.8f, 0.95f),  SkillType.Fitness,     new Vector3(0.9f, 2f, 0.9f)), "Ducha");
-        SavePrefab(BuildFurniture("TV",       NeedType.Diversión, 250f, new Color(0.15f, 0.15f, 0.18f), SkillType.Logica,     new Vector3(1.2f, 0.8f, 0.2f)), "TV");
-        SavePrefab(BuildFurniture("Sofa",     NeedType.Social,    90f,  new Color(0.6f, 0.3f, 0.3f),    SkillType.Carisma,    new Vector3(1.6f, 0.6f, 0.8f)), "Sofa");
-        SavePrefab(BuildFurniture("Escritorio", NeedType.Logica,  130f, new Color(0.5f, 0.35f, 0.2f),  SkillType.Logica,     new Vector3(1.2f, 0.75f, 0.7f)), "Escritorio");
-        SavePrefab(BuildFurniture("Caballete", NeedType.Diversión, 100f, new Color(0.8f, 0.7f, 0.4f),  SkillType.Creatividad, new Vector3(0.6f, 1.5f, 0.6f)), "Caballete");
-        SavePrefab(BuildFurniture("Comedero", NeedType.Hambre,    40f,  new Color(0.4f, 0.25f, 0.15f), SkillType.Cocina,     new Vector3(0.5f, 0.2f, 0.5f), true), "Comedero");
+        // Muebles con modelos low-poly CC0 de Kenney. Si falta el FBX, respaldo en cubo.
+        SavePrefab(BuildFurniture("Cama",       NeedType.Energia,   150f, new Color(0.9f, 0.9f, 0.95f), SkillType.Creatividad, new Vector3(1f, 0.5f, 2f),    "bedSingle",        1f), "Cama");
+        SavePrefab(BuildFurniture("Refri",      NeedType.Hambre,    200f, new Color(0.85f, 0.85f, 0.9f),  SkillType.Cocina,     new Vector3(0.8f, 1.8f, 0.8f), "kitchenFridge",    1f), "Refri");
+        SavePrefab(BuildFurniture("Ducha",      NeedType.Higiene,   120f, new Color(0.5f, 0.8f, 0.95f),  SkillType.Fitness,    new Vector3(0.9f, 2f, 0.9f),   "shower",           1f), "Ducha");
+        SavePrefab(BuildFurniture("TV",         NeedType.Diversión, 250f, new Color(0.15f, 0.15f, 0.18f), SkillType.Logica,     new Vector3(1.2f, 0.8f, 0.2f), "televisionModern", 1f), "TV");
+        SavePrefab(BuildFurniture("Sofa",       NeedType.Social,    90f,  new Color(0.6f, 0.3f, 0.3f),    SkillType.Carisma,    new Vector3(1.6f, 0.6f, 0.8f), "loungeSofa",       1f), "Sofa");
+        SavePrefab(BuildFurniture("Escritorio", NeedType.Logica,    130f, new Color(0.5f, 0.35f, 0.2f),  SkillType.Logica,     new Vector3(1.2f, 0.75f, 0.7f), "desk",             1f), "Escritorio");
+        SavePrefab(BuildFurniture("Libreria",   NeedType.Logica,     80f, new Color(0.55f, 0.4f, 0.25f),  SkillType.Logica,     new Vector3(1f, 1.8f, 0.4f),   "bookcaseOpen",     1f), "Libreria");
+        SavePrefab(BuildFurniture("Caballete",  NeedType.Diversión, 100f, new Color(0.8f, 0.7f, 0.4f),  SkillType.Creatividad, new Vector3(0.6f, 1.5f, 0.6f), null,               1f), "Caballete");
+        SavePrefab(BuildFurniture("Planta",     NeedType.Diversión,  45f, new Color(0.3f, 0.6f, 0.3f),   SkillType.Creatividad, new Vector3(0.5f, 0.8f, 0.5f), "pottedPlant",     1f), "Planta");
+        SavePrefab(BuildFurniture("Comedero",  NeedType.Hambre,    40f,  new Color(0.4f, 0.25f, 0.15f), SkillType.Cocina,     new Vector3(0.5f, 0.2f, 0.5f), null,               1f, true), "Comedero");
 
         // Pared para el editor de casa
         var wall = new GameObject("Pared");
@@ -120,7 +171,7 @@ public static class MySimsAssetBuilder
         wall.AddComponent<WallPiece>();
         SavePrefab(wall, "Pared");
 
-        // Criaturas
+        // Criaturas: personajes low-poly de Kenney con respaldo en capsula
         var perro = BuildCreature("Perro", new Color(0.55f, 0.35f, 0.2f), 0.5f);
         perro.AddComponent<Pet>().species = Pet.Species.Perro;
         SavePrefab(perro, "Perro");
@@ -129,10 +180,10 @@ public static class MySimsAssetBuilder
         gato.AddComponent<Pet>().species = Pet.Species.Gato;
         SavePrefab(gato, "Gato");
 
-        var nino = BuildCreature("Child", new Color(0.95f, 0.75f, 0.6f), 0.8f);
+        var nino = BuildCreature("Child", new Color(0.95f, 0.75f, 0.6f), 1.1f, "character-k");
         SavePrefab(nino, "Child");
 
-        var robot = BuildCreature("Robot", new Color(0.75f, 0.8f, 0.85f), 1.2f);
+        var robot = BuildCreature("Robot", new Color(0.75f, 0.8f, 0.85f), 1.4f, "character-r");
         robot.AddComponent<RobotCompanion>();
         SavePrefab(robot, "Robot");
 
@@ -164,7 +215,7 @@ public static class MySimsAssetBuilder
         surface.collectObjects = CollectObjects.All;
 
         // Personaje jugador
-        var player = BuildCreature("Sim", new Color(0.85f, 0.66f, 0.5f), 1.7f);
+        var player = BuildCreature("Sim", new Color(0.85f, 0.66f, 0.5f), 1.8f, "character-a");
         player.name = "Jugador";
         player.AddComponent<NavMeshAgent>();
         var npc = player.AddComponent<NPCController>();
@@ -259,13 +310,13 @@ public static class MySimsAssetBuilder
         snorkel.AddComponent<VacationActivity>().activityType = VacationActivityType.Snorkel;
 
         // Vecinos con rutina en Monterrey
-        var vecino1 = BuildCreature("VecinoA", new Color(0.7f, 0.5f, 0.35f), 1.7f);
+        var vecino1 = BuildCreature("VecinoA", new Color(0.7f, 0.5f, 0.35f), 1.8f, "character-b");
         vecino1.AddComponent<NavMeshAgent>();
         vecino1.AddComponent<NPCController>().isPlayerControlled = false;
         var r1 = vecino1.AddComponent<NPCRoutine>();
         r1.npcName = "Vecino A";
 
-        var vecino2 = BuildCreature("VecinoB", new Color(0.55f, 0.4f, 0.3f), 1.7f);
+        var vecino2 = BuildCreature("VecinoB", new Color(0.55f, 0.4f, 0.3f), 1.8f, "character-c");
         vecino2.AddComponent<NavMeshAgent>();
         vecino2.AddComponent<NPCController>().isPlayerControlled = false;
         var r2 = vecino2.AddComponent<NPCRoutine>();
