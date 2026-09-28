@@ -52,6 +52,14 @@
 - [x] Mascotas: perros y gatos con hambre y carino, siguen al dueno, comen de su comedero y se acarician con un tap
 - [ ] Universidades por ciudad, mascotas exoticas por país y eventos familiares, proxima ronda
 
+## Las 40 expansiones de Sims 2/3/4 (ver docs/EXPANSIONS.md para el detalle completo)
+- [x] 39 de 40 temas mapeados a sistemas funcionales: estaciones/clima, negocios, fama,
+      sobrenatural (vampiros/hombres lobo/hadas/brujas), hobbies/clubes, vivienda compartida,
+      ecologia, rancho/caballos/cultivos, instituto, mas alla/fantasmas, actividades de viaje
+      (buceo, esqui, excursion, hotel), dinastias/generaciones, citas romanticas
+- [ ] "Hacia el Futuro" (Into the Future): unico pendiente, necesita una zona sci-fi nueva
+      con robots y viaje temporal, es contenido visual mas que un sistema de datos
+
 ## Fase 5 — Publicación
 - [ ] Cuenta Google Play Developer (pago único 25 USD)
 - [ ] Ícono, capturas, ficha de tienda

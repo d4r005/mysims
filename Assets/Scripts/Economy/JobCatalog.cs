@@ -32,7 +32,9 @@ namespace MySims
             new JobOffer { job = new Job { name = "Artista local", hourlyPay = 35f }, requiredSkill = SkillType.Creatividad,  requiredLevel = 5 },
             new JobOffer { job = new Job { name = "Ingeniero de software", hourlyPay = 55f }, requiredSkill = SkillType.Logica, requiredLevel = 5, requiresDegree = true },
             new JobOffer { job = new Job { name = "Chef ejecutivo",        hourlyPay = 60f }, requiredSkill = SkillType.Cocina, requiredLevel = 6, requiresDegree = true },
-            new JobOffer { job = new Job { name = "Medico",                hourlyPay = 90f }, requiredSkill = SkillType.Logica, requiredLevel = 8, requiresDegree = true }
+            new JobOffer { job = new Job { name = "Medico",                hourlyPay = 90f }, requiredSkill = SkillType.Logica, requiredLevel = 8, requiresDegree = true },
+            new JobOffer { job = new Job { name = "Bombero",               hourlyPay = 28f }, requiredSkill = SkillType.Fitness, requiredLevel = 4 },
+            new JobOffer { job = new Job { name = "Detective",             hourlyPay = 40f }, requiredSkill = SkillType.Logica, requiredLevel = 5 }
         };
 
         void Awake() { Instance = this; }

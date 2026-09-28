@@ -16,6 +16,20 @@ namespace MySims
         public UniversityData university = new UniversityData();
         public FamilyData family = new FamilyData();
         public List<PetData> pets = new List<PetData>();
+
+        // Packs adicionales (estaciones, negocio, fama, sobrenatural, eco, vivienda, dinastia)
+        public int season, weather;
+        public bool ownsBusiness;
+        public string businessName;
+        public float businessReputation;
+        public int fameLevel;
+        public float famePoints;
+        public int supernaturalForm;
+        public float ecoScore;
+        public int housingType;
+        public float monthlyRent;
+        public int familyGeneration;
+        public float legacyScore;
         public Vector3Serializable playerPosition;
         public List<NeedData> needs = new List<NeedData>();
         public List<SkillData> skills = new List<SkillData>();

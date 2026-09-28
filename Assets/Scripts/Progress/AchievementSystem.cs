@@ -32,7 +32,18 @@ namespace MySims
             new Achievement { id = "graduado",      title = "Graduado",            description = "Termina una carrera universitaria." },
             new Achievement { id = "boda",          title = "La gran boda",         description = "Casa-te con tu pareja." },
             new Achievement { id = "familia",       title = "Familia numerosa",    description = "Ten 2 hijos o mas." },
-            new Achievement { id = "mascota",       title = "Mejor amigo peludo",  description = "Lleva el carino de tu mascota a 80 o mas." }
+            new Achievement { id = "mascota",       title = "Mejor amigo peludo",  description = "Lleva el carino de tu mascota a 80 o mas." },
+            new Achievement { id = "emprendedor",   title = "Emprendedor",         description = "Abre tu propio negocio." },
+            new Achievement { id = "famoso",        title = "Estrella local",      description = "Alcanza nivel 3 de fama." },
+            new Achievement { id = "sobrenatural",  title = "Algo mas que humano", description = "Conviertete en una criatura sobrenatural." },
+            new Achievement { id = "club",          title = "Fundador de club",    description = "Crea tu primer club de hobby." },
+            new Achievement { id = "jinete",       title = "Jinete experto",      description = "Sube el vinculo con tu caballo a 80 o mas." },
+            new Achievement { id = "bachiller",     title = "Bachiller",           description = "Graduate de la preparatoria." },
+            new Achievement { id = "mas_alla",      title = "Vida y mas alla",     description = "Cruza al mas alla como fantasma." },
+            new Achievement { id = "explorador",    title = "Explorador",          description = "Completa una excursion de aventura." },
+            new Achievement { id = "eco",           title = "Guardian verde",      description = "Alcanza 80 o mas de puntaje ecologico." },
+            new Achievement { id = "cita_romantica",title = "Noche romantica",     description = "Sal en una cita con tu pareja." },
+            new Achievement { id = "dinastia",      title = "Dinastia familiar",   description = "Llega a la generacion 3 de tu familia." }
         };
 
         public event Action<Achievement> OnUnlocked;

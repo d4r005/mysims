@@ -40,8 +40,13 @@ namespace MySims
         [Tooltip("Prefab del hijo. Se busca tambien en PrefabRegistry por nombre Child.")]
         public GameObject childPrefab;
 
+        [Header("Dinastia (pack Dinastias y Linajes)")]
+        public int generation = 1;
+        public float legacyScore;
+
         public event Action<FamilyStage> OnStageChanged;
         public event Action<Child> OnChildBorn;
+        public event Action<int> OnGenerationAdvanced;
 
         void Awake() { Instance = this; }
         void OnEnable() { TimeSystem.Instance.OnDayChanged += GrowChildren; }
@@ -139,6 +144,31 @@ namespace MySims
                 if (d <= min) { min = d; nearest = npc; }
             }
             return nearest;
+        }
+
+        /// <summary>Pasa el legado a la siguiente generacion. Pack Dinastias y Linajes.</summary>
+        public void AdvanceGeneration()
+        {
+            float achievementsBonus = AchievementSystem.Instance != null ? AchievementSystem.Instance.Unlocked.Count * 10f : 0f;
+            float moneyBonus = EconomySystem.Instance != null ? EconomySystem.Instance.money * 0.01f : 0f;
+            legacyScore += achievementsBonus + moneyBonus;
+            generation++;
+            OnGenerationAdvanced?.Invoke(generation);
+            if (generation >= 3) AchievementSystem.Instance?.Unlock("dinastia");
+        }
+
+        /// <summary>Cita romantica con la pareja mas cercana. Pack Noctambulos / Viva el Amor.</summary>
+        public bool GoOnDate(float cost = 50f)
+        {
+            var npc = NearestPartner();
+            if (npc == null) return false;
+            var economy = EconomySystem.Instance;
+            if (economy == null || !economy.TrySpend(cost)) return false;
+
+            DialogueSystem.Instance?.TryStartConversationWith(npc);
+            NeedsSystem.Instance?.Recover(NeedType.Diversión, 0.4f);
+            AchievementSystem.Instance?.Unlock("cita_romantica");
+            return true;
         }
 
         public string StageLabel =>

@@ -72,6 +72,19 @@ namespace MySims
                     position = ToSerializable(pet.transform.position)
                 });
 
+            if (SeasonSystem.Instance != null) { data.season = (int)SeasonSystem.Instance.currentSeason; data.weather = (int)SeasonSystem.Instance.currentWeather; }
+            if (BusinessSystem.Instance != null)
+            {
+                data.ownsBusiness = BusinessSystem.Instance.OwnsBusiness;
+                data.businessName = BusinessSystem.Instance.businessName;
+                data.businessReputation = BusinessSystem.Instance.reputation;
+            }
+            if (FameSystem.Instance != null) { data.fameLevel = FameSystem.Instance.fameLevel; data.famePoints = FameSystem.Instance.famePoints; }
+            if (SupernaturalSystem.Instance != null) data.supernaturalForm = (int)SupernaturalSystem.Instance.currentForm;
+            if (EcoSystem.Instance != null) data.ecoScore = EcoSystem.Instance.ecoScore;
+            if (HousingSystem.Instance != null) { data.housingType = (int)HousingSystem.Instance.housingType; data.monthlyRent = HousingSystem.Instance.monthlyRent; }
+            if (FamilySystem.Instance != null) { data.familyGeneration = FamilySystem.Instance.generation; data.legacyScore = FamilySystem.Instance.legacyScore; }
+
             foreach (var wall in WallPiece.All)
                 data.walls.Add(new WallData
                 {
@@ -188,6 +201,19 @@ namespace MySims
             if (PetSystem.Instance != null)
                 foreach (var pd in data.pets)
                     PetSystem.Instance.RestorePet(pd);
+
+            if (SeasonSystem.Instance != null) { SeasonSystem.Instance.currentSeason = (Season)data.season; SeasonSystem.Instance.currentWeather = (Weather)data.weather; }
+            if (BusinessSystem.Instance != null)
+            {
+                BusinessSystem.Instance.OwnsBusiness = data.ownsBusiness;
+                BusinessSystem.Instance.businessName = data.businessName;
+                BusinessSystem.Instance.reputation = data.businessReputation;
+            }
+            if (FameSystem.Instance != null) { FameSystem.Instance.fameLevel = data.fameLevel; FameSystem.Instance.famePoints = data.famePoints; }
+            if (SupernaturalSystem.Instance != null) SupernaturalSystem.Instance.currentForm = (CreatureType)data.supernaturalForm;
+            if (EcoSystem.Instance != null) EcoSystem.Instance.ecoScore = data.ecoScore;
+            if (HousingSystem.Instance != null) { HousingSystem.Instance.housingType = (HousingType)data.housingType; HousingSystem.Instance.monthlyRent = data.monthlyRent; }
+            if (FamilySystem.Instance != null) { FamilySystem.Instance.generation = data.familyGeneration > 0 ? data.familyGeneration : 1; FamilySystem.Instance.legacyScore = data.legacyScore; }
 
             // Muros construidos
             if (PrefabRegistry.Instance != null && WallBuilder.Instance != null)

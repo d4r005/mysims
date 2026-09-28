@@ -2,7 +2,7 @@
 
 Juego de simulación social estilo *Los Sims* para **Android**, construido con **Unity 2022.3 LTS (C#)**.
 
-## Estado actual: Fase 4 + mundo global + packs de contenido (Universidad, Familia, Mascotas)
+## Estado actual: Fase 4 + mundo global (60 ciudades) + las 40 expansiones de Sims 2/3/4 mapeadas a sistemas
 
 Sistemas ya implementados como código base:
 
@@ -34,7 +34,24 @@ Sistemas ya implementados como código base:
 
 ## Hoja de ruta
 
-Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para las fases completas (editor de casa, personalización, nube y publicación en Google Play).
+Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para las fases y [`docs/EXPANSIONS.md`](docs/EXPANSIONS.md) para el mapeo completo de las 40 expansiones de Sims 2/3/4 a sistemas de este repo.
+
+**Packs de contenido nuevos (equivalentes a expansiones):**
+
+| Pack | Script | Cubre temas de |
+|---|---|---|
+| 🌦️ Estaciones y clima | `World/SeasonSystem.cs` | Cuatro Estaciones (x3), Escapada en la Nieve |
+| 🏪 Negocios | `Economy/BusinessSystem.cs` | Abren Negocios, Ocio y Negocio, A Trabajar |
+| ⭐ Fama | `Progress/FameSystem.cs` | Salto a la Fama, Rumbo a la Fama, Al Caer la Noche |
+| 🧛 Sobrenatural | `Supernatural/SupernaturalSystem.cs` | Noctámbulos, Criaturas Sobrenaturales, Naturaleza Encantada |
+| 🎨 Hobbies y clubes | `Social/HobbyClubSystem.cs` | Y Sus Hobbies, ¿Quedamos?, Ocio y Negocio |
+| 🏢 Vivienda compartida | `Housing/HousingSystem.cs` | Comparten Piso, Se Alquila, Urbanitas |
+| ♻️ Ecología | `Progress/EcoSystem.cs` | Vida Ecológica |
+| 🐴 Rancho y pueblo | `Pets/FarmSystem.cs` | Rancho de Caballos, Vida en el Pueblo |
+| 🏫 Instituto | `Education/HighSchoolSystem.cs` | Años High School |
+| 👻 Más allá | `Family/AfterlifeSystem.cs` | Vida y Más Allá |
+| ✈️ Actividades de viaje | `World/VacationActivity.cs` | Bon Voyage, Vida Isleña, Aventura en la Isla, A la Aventura |
+| 👑 Dinastías | `Family/FamilySystem.cs` (generation, legacyScore) | Dinastías y Linajes, Menuda Familia, Creciendo en Familia |
 
 **Novedades Fase 3:**
 

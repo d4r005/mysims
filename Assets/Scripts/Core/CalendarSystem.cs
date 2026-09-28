@@ -33,6 +33,13 @@ namespace MySims
         void OnEnable() { TimeSystem.Instance.OnDayChanged += HandleDayChanged; }
         void OnDisable() { if (TimeSystem.Instance != null) TimeSystem.Instance.OnDayChanged -= HandleDayChanged; }
 
+        /// <summary>Marca el primer dia de cada estacion como festivo. Pack Estaciones.</summary>
+        public void MarkSeasonalHoliday(Season season)
+        {
+            IsHoliday = true;
+            OnNewDay?.Invoke(TimeSystem.Instance.CurrentDay, DayName + " (festival de " + season + ")");
+        }
+
         void HandleDayChanged(int day)
         {
             DayIndex = (day - 1) % 7;
