@@ -245,7 +245,7 @@ namespace MySims
                         Debug.LogWarning($"Save: prefab no encontrado en el registro: {po.prefabName}");
                         continue;
                     }
-                    var placed = Instantiate(prefab, FromSerializable(po.position), Quaternion.Euler(0f, po.rotationY, 0f));
+                    var placed = Object.Instantiate(prefab, FromSerializable(po.position), Quaternion.Euler(0f, po.rotationY, 0f));
                     var placeable = placed.GetComponent<PlaceableObject>();
                     if (placeable != null) placeable.placedByPlayer = true;
                 }

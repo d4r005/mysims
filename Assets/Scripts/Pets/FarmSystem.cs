@@ -64,7 +64,7 @@ namespace MySims
         {
             var economy = EconomySystem.Instance;
             if (economy == null || !economy.TrySpend(horseAdoptionCost) || horsePrefab == null) return false;
-            Object.Instantiate(horsePrefab, position, Quaternion.identity);
+            UnityEngine.Object.Instantiate(horsePrefab, position, Quaternion.identity);
             return true;
         }
     }
