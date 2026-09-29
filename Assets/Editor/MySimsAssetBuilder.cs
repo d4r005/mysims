@@ -312,6 +312,7 @@ public static class MySimsAssetBuilder
 
         // GameManager con todos los sistemas
         var gm = new GameObject("GameManager");
+        gm.AddComponent<GraphicsQuality>(); // sombras + antialiasing aunque los defaults de Android los traigan apagados
         var manager = gm.AddComponent<GameManager>();
         manager.playerCharacter = npc;
         manager.playerNeeds = player.GetComponent<NeedsSystem>();
