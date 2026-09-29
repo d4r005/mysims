@@ -2,7 +2,7 @@
 
 Juego de simulación social estilo *Los Sims* para **Android**, construido con **Unity 2022.3 LTS (C#)**.
 
-## Estado actual: las 40/40 expansiones + mundo global + arte base procedural + escena jugable en un clic
+## Estado actual: las 40/40 expansiones + mundo global + arte base procedural + escena jugable en un clic + look Sims (plumbob y HUD)
 
 Sistemas ya implementados como código base:
 
@@ -21,6 +21,8 @@ Sistemas ya implementados como código base:
 | 🏃 Animación procedural | `NPC/SimpleLocomotion.cs` | Bob al caminar, respiración en idle, giro suave (sin necesidad de rig) |
 | 🔊 Sonido y música | `Audio/AudioManager.cs` | Sonido ambiente y música 100% procedural (sin archivos), cambia entre día y noche, botón Sonido |
 | 🗓️ Misiones diarias | `Progress/DailyMissionSystem.cs` | 3 misiones por día (usar muebles, XP, dinero, viajes) con recompensa y logro "misionero" |
+| 💎 Plumbob | `NPC/Plumbob.cs` | El diamante verde de Los Sims: gira y flota sobre el sim, cambia de color con su ánimo (verde → amarillo → naranja → rojo) |
+| 🎨 HUD estilo Sims 4 | `UI/MoneyHUD.cs` + generador | Panel de necesidades redondeado azul noche con nombre del sim, contador de simoleones "§ 500", botones en píldora |
 | 🏖️ Playa completa | `Alberca`, `SillaPlaya`, `RedVoleibol` | Nadar, bronceado y volley: nuevos muebles en la tienda y colocados en Cancún |
 
 ## Puesta en marcha rápida (arte incluido)

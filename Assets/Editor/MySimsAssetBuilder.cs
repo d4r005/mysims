@@ -306,6 +306,7 @@ public static class MySimsAssetBuilder
         var npc = player.AddComponent<NPCController>();
         npc.isPlayerControlled = true;
         player.AddComponent<SimpleLocomotion>();
+        player.AddComponent<Plumbob>(); // el diamante verde girando sobre la cabeza (look Sims)
         var customizer = player.AddComponent<CharacterCustomizer>();
         customizer.bodyRenderer = player.GetComponentInChildren<Renderer>();
         player.AddComponent<NeedsSystem>();
@@ -438,7 +439,7 @@ public static class MySimsAssetBuilder
         surface.BuildNavMesh();
 
         // UI basica: barras de necesidad y botones de velocidad
-        BuildUI(manager, dialogue);
+        BuildUI(manager, dialogue, player.name);
 
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/Main.unity");
         Debug.Log("MySims: escena base creada en Assets/Scenes/Main.unity. Dale Play para probar.");
@@ -640,79 +641,198 @@ public static class MySimsAssetBuilder
         go.transform.position = pos;
     }
 
-    static void BuildUI(GameManager gm, DialogueSystem dialogue)
+    static void BuildUI(GameManager gm, DialogueSystem dialogue, string simName)
     {
+        UIBox = RoundedSprite("ui_redondeado", 18);
+
         var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         var canvas = canvasGo.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        // Barras de necesidad a la izquierda
-        var needsSystem = gm.playerNeeds;
-        string[] barNames = { "Bar_Hambre", "Bar_Energia", "Bar_Social", "Bar_Diversión", "Bar_Higiene" };
-        var ui = canvasGo.AddComponent<NeedsUIController>();
-        NeedType[] types = { NeedType.Hambre, NeedType.Energia, NeedType.Social, NeedType.Diversión, NeedType.Higiene };
-        for (int i = 0; i < barNames.Length; i++)
+        // ---- Panel de necesidades estilo Sims 4 (abajo a la derecha) ----
+        var panelGo = new GameObject("NeedsPanel", typeof(RectTransform), typeof(Image));
+        var pRt = panelGo.GetComponent<RectTransform>();
+        pRt.SetParent(canvas.transform, false);
+        pRt.anchorMin = pRt.anchorMax = new Vector2(1f, 0f);
+        pRt.pivot = new Vector2(1f, 0f);
+        pRt.anchoredPosition = new Vector2(-12f, 12f);
+        pRt.sizeDelta = new Vector2(300f, 236f);
+        var pImg = panelGo.GetComponent<Image>();
+        pImg.sprite = UIBox;
+        pImg.type = Image.Type.Sliced;
+        pImg.color = new Color(0.05f, 0.10f, 0.18f, 0.92f); // azul noche translúcido, como el HUD de Sims 4
+
+        // Encabezado: plumbob + nombre del sim
+        var icon = MakeDiamondIcon(pRt.transform, 13f, new Color(0.22f, 0.86f, 0.25f));
+        var iRt = icon.GetComponent<RectTransform>();
+        iRt.anchorMin = iRt.anchorMax = new Vector2(0.5f, 1f);
+        iRt.pivot = new Vector2(0.5f, 0.5f);
+        iRt.anchoredPosition = new Vector2(-116f, -21f);
+
+        MakeText(pRt.transform, "simName", simName,
+            new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(36f, -10f), new Vector2(220f, 22f),
+            TextAnchor.MiddleLeft, 15, Color.white, FontStyle.Bold);
+
+        // Una fila por necesidad: etiqueta a la izquierda, barra redondeada a la derecha
+        var ui = panelGo.AddComponent<NeedsUIController>();
+        var labels = new[] { "Hambre", "Energía", "Social", "Diversión", "Higiene" };
+        var types = new[] { NeedType.Hambre, NeedType.Energia, NeedType.Social, NeedType.Diversión, NeedType.Higiene };
+        for (int i = 0; i < labels.Length; i++)
         {
-            var slider = MakeBar(canvas.transform, barNames[i], -40f + i * -30f);
+            var slider = MakeNeedRow(pRt.transform, labels[i], i);
             ui.bars.Add(new NeedsUIController.NeedBar { type = types[i], slider = slider, fillImage = slider.fillRect.GetComponent<Image>() });
         }
 
-        // Botones de velocidad arriba
+        // ---- Controles de tiempo arriba, agrupados en píldora ----
+        var clusterGo = new GameObject("TimeCluster", typeof(RectTransform), typeof(Image));
+        var cRt = clusterGo.GetComponent<RectTransform>();
+        cRt.SetParent(canvas.transform, false);
+        cRt.anchorMin = cRt.anchorMax = new Vector2(0.5f, 1f);
+        cRt.pivot = new Vector2(0.5f, 1f);
+        cRt.anchoredPosition = new Vector2(0f, -10f);
+        cRt.sizeDelta = new Vector2(364f, 40f);
+        var cImg = clusterGo.GetComponent<Image>();
+        cImg.sprite = UIBox;
+        cImg.type = Image.Type.Sliced;
+        cImg.color = new Color(0.05f, 0.10f, 0.18f, 0.92f);
+
         string[] speedLabels = { "Pausa", "x1", "x2", "x4" };
         for (int i = 0; i < speedLabels.Length; i++)
         {
-            var btn = MakeButton(canvas.transform, speedLabels[i], new Vector2(-300f + i * 80f, -20f));
+            var btn = MakeButton(cRt.transform, speedLabels[i], new Vector2(-140f + i * 70f, 0f), 64f);
             var ctrl = btn.gameObject.AddComponent<TimeControlsUI>();
             ctrl.speedIndex = i;
         }
-
-        // Boton de sonido al lado de los controles de tiempo
-        var soundBtn = MakeButton(canvas.transform, "Sonido", new Vector2(90f, -20f));
+        var soundBtn = MakeButton(cRt.transform, "Sonido", new Vector2(140f, 0f), 64f);
         soundBtn.gameObject.AddComponent<AudioToggleUI>();
 
-        // Panel de misiones diarias arriba a la derecha
-        var missionsGo = new GameObject("MissionsPanel", typeof(RectTransform), typeof(Text));
-        var mRt = missionsGo.GetComponent<RectTransform>();
-        mRt.SetParent(canvas.transform);
-        mRt.anchorMin = mRt.anchorMax = new Vector2(1f, 1f);
-        mRt.pivot = new Vector2(1f, 1f);
-        mRt.anchoredPosition = new Vector2(-10f, -10f);
-        mRt.sizeDelta = new Vector2(240f, 120f);
-        var mTxt = missionsGo.GetComponent<Text>();
-        mTxt.alignment = TextAnchor.UpperRight;
-        mTxt.fontSize = 13;
-        mTxt.color = Color.white;
-        mTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        missionsGo.AddComponent<MissionsUI>();
+        // ---- Simoleones arriba a la izquierda ----
+        var moneyGo = new GameObject("MoneyHUD", typeof(RectTransform), typeof(Image));
+        var mRt = moneyGo.GetComponent<RectTransform>();
+        mRt.SetParent(canvas.transform, false);
+        mRt.anchorMin = mRt.anchorMax = new Vector2(0f, 1f);
+        mRt.pivot = new Vector2(0f, 1f);
+        mRt.anchoredPosition = new Vector2(12f, -10f);
+        mRt.sizeDelta = new Vector2(140f, 36f);
+        var mImg = moneyGo.GetComponent<Image>();
+        mImg.sprite = UIBox;
+        mImg.type = Image.Type.Sliced;
+        mImg.color = new Color(0.05f, 0.10f, 0.18f, 0.92f);
+
+        var moneyTxt = MakeText(mRt.transform, "valor", "§ 500",
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(130f, 36f),
+            TextAnchor.MiddleCenter, 16, new Color(0.42f, 0.85f, 0.45f), FontStyle.Bold);
+        moneyTxt.gameObject.AddComponent<MoneyHUD>();
+
+        // ---- Misiones diarias arriba a la derecha, ahora con fondo legible ----
+        var missionsPanel = new GameObject("MissionsPanel", typeof(RectTransform), typeof(Image));
+        var miRt = missionsPanel.GetComponent<RectTransform>();
+        miRt.SetParent(canvas.transform, false);
+        miRt.anchorMin = miRt.anchorMax = new Vector2(1f, 1f);
+        miRt.pivot = new Vector2(1f, 1f);
+        miRt.anchoredPosition = new Vector2(-12f, -10f);
+        miRt.sizeDelta = new Vector2(250f, 140f);
+        var miImg = missionsPanel.GetComponent<Image>();
+        miImg.sprite = UIBox;
+        miImg.type = Image.Type.Sliced;
+        miImg.color = new Color(0.05f, 0.10f, 0.18f, 0.92f);
+
+        var missionsTxt = MakeText(miRt.transform, "texto", "Misiones",
+            new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(12f, -10f), new Vector2(226f, 122f),
+            TextAnchor.UpperLeft, 13, Color.white);
+        missionsTxt.gameObject.AddComponent<MissionsUI>();
     }
 
-    static Slider MakeBar(Transform parent, string name, float y)
+    static Slider MakeNeedRow(Transform panel, string label, int index)
     {
-        var root = new GameObject(name, typeof(RectTransform), typeof(Slider));
-        var rt = root.GetComponent<RectTransform>();
-        rt.SetParent(parent);
-        rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
-        rt.pivot = new Vector2(0f, 1f);
-        rt.anchoredPosition = new Vector2(15f, y);
-        rt.sizeDelta = new Vector2(160f, 14f);
+        float y = -52f - index * 34f;
 
-        var bgGo = new GameObject("fondo", typeof(RectTransform), typeof(Image));
-        bgGo.GetComponent<RectTransform>().SetParent(rt, false);
-        Stretch(bgGo.GetComponent<RectTransform>());
-        bgGo.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+        MakeText(panel, "lbl_" + label, label,
+            new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(14f, y), new Vector2(86f, 18f),
+            TextAnchor.MiddleLeft, 13, new Color(0.85f, 0.92f, 1f));
+
+        var barGo = new GameObject("Bar_" + label, typeof(RectTransform), typeof(Image), typeof(Slider));
+        var bRt = barGo.GetComponent<RectTransform>();
+        bRt.SetParent(panel, false);
+        bRt.anchorMin = bRt.anchorMax = new Vector2(1f, 1f);
+        bRt.pivot = new Vector2(1f, 1f);
+        bRt.anchoredPosition = new Vector2(-12f, y);
+        bRt.sizeDelta = new Vector2(182f, 18f);
+        var bg = barGo.GetComponent<Image>();
+        bg.sprite = UIBox;
+        bg.type = Image.Type.Sliced;
+        bg.color = new Color(0.08f, 0.12f, 0.20f, 0.95f);
 
         var fillGo = new GameObject("fill", typeof(RectTransform), typeof(Image));
-        var fillRt = fillGo.GetComponent<RectTransform>();
-        fillRt.SetParent(rt, false);
-        Stretch(fillRt);
-        fillGo.GetComponent<Image>().color = new Color(0.3f, 0.8f, 0.35f);
+        var fRt = fillGo.GetComponent<RectTransform>();
+        fRt.SetParent(bRt, false);
+        Stretch(fRt);
+        var fill = fillGo.GetComponent<Image>();
+        fill.sprite = UIBox;
+        fill.type = Image.Type.Sliced;
+        fill.color = new Color(0.30f, 0.78f, 0.35f);
 
-        var slider = root.GetComponent<Slider>();
-        slider.fillRect = fillRt;
+        var slider = barGo.GetComponent<Slider>();
+        slider.fillRect = fRt;
         slider.minValue = 0f;
         slider.maxValue = 1f;
         slider.interactable = false;
         return slider;
+    }
+
+    static Button MakeButton(Transform parent, string label, Vector2 localPos, float width)
+    {
+        var btnGo = new GameObject("btn_" + label, typeof(RectTransform), typeof(Image), typeof(Button));
+        var rt = btnGo.GetComponent<RectTransform>();
+        rt.SetParent(parent, false);
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = localPos;
+        rt.sizeDelta = new Vector2(width, 28f);
+        var img = btnGo.GetComponent<Image>();
+        img.sprite = UIBox;
+        img.type = Image.Type.Sliced;
+        img.color = new Color(0.16f, 0.23f, 0.36f, 1f);
+
+        MakeText(rt, "label", label,
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(width, 28f),
+            TextAnchor.MiddleCenter, 13, Color.white);
+        return btnGo.GetComponent<Button>();
+    }
+
+    static Text MakeText(Transform parent, string goName, string content,
+        Vector2 anchor, Vector2 pivot, Vector2 pos, Vector2 size,
+        TextAnchor align, int fontSize, Color color, FontStyle style = FontStyle.Normal)
+    {
+        var go = new GameObject(goName, typeof(RectTransform), typeof(Text));
+        var rt = go.GetComponent<RectTransform>();
+        rt.SetParent(parent, false);
+        rt.anchorMin = rt.anchorMax = anchor;
+        rt.pivot = pivot;
+        rt.anchoredPosition = pos;
+        rt.sizeDelta = size;
+        var txt = go.GetComponent<Text>();
+        txt.text = content;
+        txt.alignment = align;
+        txt.fontSize = fontSize;
+        txt.fontStyle = style;
+        txt.color = color;
+        txt.font = GetFont();
+        txt.horizontalOverflow = HorizontalWrapMode.Overflow;
+        txt.verticalOverflow = VerticalWrapMode.Overflow;
+        txt.raycastTarget = false;
+        return txt;
+    }
+
+    static GameObject MakeDiamondIcon(Transform parent, float size, Color color)
+    {
+        var go = new GameObject("iconoPlumbob", typeof(RectTransform), typeof(Image));
+        var rt = go.GetComponent<RectTransform>();
+        rt.SetParent(parent, false);
+        rt.sizeDelta = new Vector2(size, size);
+        rt.localRotation = Quaternion.Euler(0f, 0f, 45f); // cuadro girado 45 grados = diamante
+        go.GetComponent<Image>().color = color;
+        return go;
     }
 
     static void Stretch(RectTransform rt)
@@ -722,27 +842,49 @@ public static class MySimsAssetBuilder
         rt.offsetMin = rt.offsetMax = Vector2.zero;
     }
 
-    static Button MakeButton(Transform parent, string label, Vector2 pos)
-    {
-        var btnGo = new GameObject("btn_" + label, typeof(RectTransform), typeof(Image), typeof(Button));
-        var rt = btnGo.GetComponent<RectTransform>();
-        rt.SetParent(parent);
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
-        rt.pivot = new Vector2(0.5f, 1f);
-        rt.anchoredPosition = pos;
-        rt.sizeDelta = new Vector2(70f, 30f);
-        btnGo.GetComponent<Image>().color = new Color(0.25f, 0.25f, 0.3f, 0.9f);
+    // ---------- helpers de UI ----------
 
-        var txtGo = new GameObject("label", typeof(RectTransform));
-        var txtRt = txtGo.GetComponent<RectTransform>();
-        txtRt.SetParent(rt, false);
-        Stretch(txtRt);
-        var txt = txtGo.AddComponent<Text>();
-        txt.text = label;
-        txt.alignment = TextAnchor.MiddleCenter;
-        txt.color = Color.white;
-        txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        return btnGo.GetComponent<Button>();
+    static Sprite UIBox; // sprite 9-slice con esquinas redondeadas para paneles y botones
+
+    static Font GetFont() => Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+    /// <summary>Sprite blanco 9-slice con esquinas redondeadas, generado y guardado como asset en Assets/Generated/UI.</summary>
+    static Sprite RoundedSprite(string name, int radius)
+    {
+        Directory.CreateDirectory("Assets/Generated/UI");
+        string path = $"Assets/Generated/UI/{name}.png";
+        var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (existing != null) return existing;
+
+        int size = 64;
+        float half = size / 2f;
+        var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        var px = new Color32[size * size];
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                // distancia con signo a un rectangulo con esquinas redondeadas -> alpha suave
+                float dx = Mathf.Max(Mathf.Abs(x - half + 0.5f) - (half - 1f - radius), 0f);
+                float dy = Mathf.Max(Mathf.Abs(y - half + 0.5f) - (half - 1f - radius), 0f);
+                float dist = new Vector2(dx, dy).magnitude - radius;
+                float alpha = Mathf.Clamp01(0.5f - dist);
+                px[y * size + x] = new Color32(255, 255, 255, (byte)(alpha * 255f));
+            }
+        }
+        tex.SetPixels32(px);
+        tex.Apply();
+        File.WriteAllBytes(path, tex.EncodeToPNG());
+
+        var imp = (TextureImporter)AssetImporter.GetAtPath(path);
+        imp.textureType = TextureImporterType.Sprite;
+        imp.spriteImportMode = SpriteImportMode.Single;
+        imp.spriteBorder = new Vector4(radius, radius, radius, radius);
+        imp.alphaIsTransparency = true;
+        imp.mipmapEnabled = false;
+        imp.textureCompression = TextureImporterCompression.Uncompressed;
+        imp.SaveAndReimport();
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }
 }
 #endif
