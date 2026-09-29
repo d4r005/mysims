@@ -1,0 +1,23 @@
+name: Obtener licencia Unity
+
+on: workflow_dispatch
+
+jobs:
+  activation:
+    name: Generar archivo de activacion (.alf)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Crear archivo de activacion manual
+        run: |
+          docker run --rm -v "$PWD:/project" unityci/editor:2022.3.50f1-android-3 \
+            bash -c 'cd /project && unity-editor -batchmode -nographics -quit -logFile -createManualActivationFile || true; ls -la /project/*.alf'
+
+      - name: Subir .alf como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-alf
+          path: "*.alf"
+          if-no-files-found: error
