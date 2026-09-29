@@ -111,7 +111,63 @@ public static class MySimsAssetBuilder
         return root;
     }
 
+
+    /// <summary>Mascota low-poly estilo Kenney construida con prismas (el kit no trae animales).</summary>
+    static GameObject BuildPet(string name, Color color, bool isDog, float height)
+    {
+        var root = new GameObject(name);
+        var mat = GetMat(name, color);
+        var light = GetMat(name + "_Light", Color.Lerp(color, Color.white, 0.45f));
+
+        // Cuerpo (caja horizontal)
+        Cube("body", root.transform, new Vector3(0f, height * 0.55f, 0f), new Vector3(height * 0.9f, height * 0.55f, height * 1.5f), mat);
+
+        // Cabeza + hocico
+        var head = Cube("head", root.transform, new Vector3(0f, height * 1.05f, height * 0.75f), new Vector3(height * 0.6f, height * 0.55f, height * 0.55f), mat);
+        Cube("snout", root.transform, new Vector3(0f, height * 0.92f, height * 1.05f), new Vector3(height * 0.3f, height * 0.25f, height * 0.3f), light);
+        // Ojos
+        Cube("eyeL", root.transform, new Vector3(height * 0.18f, height * 1.15f, height * 0.98f), new Vector3(height * 0.08f, height * 0.08f, height * 0.04f), GetMat(name + "_Eye", Color.black));
+        Cube("eyeR", root.transform, new Vector3(-height * 0.18f, height * 1.15f, height * 0.98f), new Vector3(height * 0.08f, height * 0.08f, height * 0.04f), GetMat(name + "_Eye", Color.black));
+
+        // Orejas: caidas para perro, puntiagudas para gato
+        if (isDog)
+        {
+            Cube("earL", root.transform, new Vector3(height * 0.32f, height * 1.28f, height * 0.7f), new Vector3(height * 0.14f, height * 0.3f, height * 0.1f), light);
+            Cube("earR", root.transform, new Vector3(-height * 0.32f, height * 1.28f, height * 0.7f), new Vector3(height * 0.14f, height * 0.3f, height * 0.1f), light);
+        }
+        else
+        {
+            Cube("earL", root.transform, new Vector3(height * 0.3f, height * 1.42f, height * 0.62f), new Vector3(height * 0.16f, height * 0.22f, height * 0.08f), mat);
+            Cube("earR", root.transform, new Vector3(-height * 0.3f, height * 1.42f, height * 0.62f), new Vector3(height * 0.16f, height * 0.22f, height * 0.08f), mat);
+        }
+
+        // Patas
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? 1 : -1) * height * 0.3f;
+            float z = (i < 2 ? 1 : -1) * height * 0.5f;
+            Cube("leg" + i, root.transform, new Vector3(x, height * 0.14f, z), new Vector3(height * 0.18f, height * 0.28f, height * 0.18f), light);
+        }
+
+        // Cola: corta en perro, larga en gato
+        if (isDog)
+            Cube("tail", root.transform, new Vector3(0f, height * 0.75f, -height * 0.8f), new Vector3(height * 0.12f, height * 0.12f, height * 0.35f), light);
+        else
+            Cube("tail", root.transform, new Vector3(0f, height * 0.9f, -height * 0.9f), new Vector3(height * 0.1f, height * 0.1f, height * 0.8f), mat);
+
+        // Un solo collider en la raiz: quitamos los BoxCollider de cada prisma
+        foreach (var box in root.GetComponentsInChildren<BoxCollider>())
+            Object.DestroyImmediate(box);
+        var cap = root.AddComponent<CapsuleCollider>();
+        cap.direction = 2; // eje Z (el cuerpo es horizontal)
+        cap.height = height * 1.6f;
+        cap.radius = height * 0.45f;
+        cap.center = new Vector3(0f, height * 0.55f, 0f);
+        return root;
+    }
+
     static GameObject BuildCreature(string name, Color bodyColor, float height, string characterModel = null)
+
     {
         var root = new GameObject(name);
 
@@ -173,11 +229,11 @@ public static class MySimsAssetBuilder
         SavePrefab(wall, "Pared");
 
         // Criaturas: personajes low-poly de Kenney con respaldo en capsula
-        var perro = BuildCreature("Perro", new Color(0.55f, 0.35f, 0.2f), 0.5f);
+        var perro = BuildPet("Perro", new Color(0.55f, 0.35f, 0.2f), true, 0.5f);
         perro.AddComponent<Pet>().species = Pet.Species.Perro;
         SavePrefab(perro, "Perro");
 
-        var gato = BuildCreature("Gato", new Color(0.9f, 0.85f, 0.7f), 0.3f);
+        var gato = BuildPet("Gato", new Color(0.9f, 0.85f, 0.7f), false, 0.3f);
         gato.AddComponent<Pet>().species = Pet.Species.Gato;
         SavePrefab(gato, "Gato");
 
