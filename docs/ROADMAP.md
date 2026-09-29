@@ -15,7 +15,7 @@
 - [x] Controles de velocidad del tiempo (pausa / x1 / x2 / x4)
 - [x] Restaurar muebles colocados al cargar partida (PrefabRegistry por nombre)
 - [x] Animación procedural básica (bob al caminar, respiración en idle)
-- [ ] Sonido ambiente y música
+- [x] Sonido ambiente y música (`Audio/AudioManager.cs`, 100% procedural, dia/noche y boton Sonido)
 
 ## Fase 3 — Mundo vivo (completada)
 - [x] Economía: dinero con eventos para UI y guardado
@@ -32,8 +32,8 @@
 - [x] Personalización del personaje (colores de piel, cabello y ropa, guardado en la partida)
 - [x] Logros conectados a todos los sistemas (AchievementSystem)
 - [ ] Pisos y múltiples habitaciones
-- [ ] Misiones diarias
-- [ ] Guardado en la nube (opcional)
+- [x] Misiones diarias (`Progress/DailyMissionSystem.cs` + `UI/MissionsUI.cs`, 3 por dia con recompensa y logro misionero)
+- [ ] Guardado en la nube (omitido a peticion del autor)
 - [ ] Optimización móvil (draw calls, LOD, occlusion culling)
 
 ## Fase 4.5 — Mundo global (en progreso)
@@ -43,7 +43,7 @@
 - [x] Elegir en qué lugar del mundo vive el sim (TravelSystem.SetHome)
 - [x] Mapa UI agrupado por país con costos y botón de vivir aquí (WorldMapUI)
 - [x] Playas y todo el mundo: 60 ubicaciones de America, Europa, Asia, Africa y Oceania
-- [ ] Playas con actividades especiales: nadar, bronceado, volley (nuevos PlaceableObject)
+- [x] Playas con actividades especiales: nadar, bronceado, volley (Alberca, SillaPlaya, RedVoleibol en la tienda y en Cancun)
 - [ ] Clima por país y más contenido visual por zona
 
 ## Packs de contenido estilo expansiones
@@ -73,3 +73,8 @@
 - [Kenney.nl](https://kenney.nl) — muebles y personajes low-poly
 - [itch.io](https://itch.io/game-assets/free) — packs de casas y UI
 - [OpenGameArt](https://opengameart.org) — música y SFX
+
+## Fase 5 — CI/CD
+- [x] GitHub Actions con game-ci/unity-builder: APK automatico en cada push a main
+      (`.github/workflows/build-apk.yml` + `Assets/Editor/CIBuild.cs`). Requiere secrets
+      UNITY_LICENSE / UNITY_EMAIL / UNITY_PASSWORD (licencia personal via Unity Hub).

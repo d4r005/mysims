@@ -42,6 +42,8 @@ namespace MySims
         };
 
         public event Action<Skill> OnSkillChanged;
+        /// <summary>XP ganada en bruto (misiones diarias y audio se cuelgan aqui).</summary>
+        public event Action<SkillType, float> OnXpGained;
 
         void Awake() { Instance = this; }
 
@@ -52,6 +54,7 @@ namespace MySims
             if (skill.AddXp(amount))
                 Debug.Log($"¡Habilidad subida! {skill.type} nivel {skill.level}");
             OnSkillChanged?.Invoke(skill);
+            OnXpGained?.Invoke(type, amount);
         }
 
         public Skill GetSkill(SkillType type) => skills.Find(s => s.type == type);

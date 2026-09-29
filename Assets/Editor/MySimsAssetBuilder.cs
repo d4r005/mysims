@@ -147,7 +147,7 @@ public static class MySimsAssetBuilder
     }
 
     [MenuItem("MySims/1. Generar prefabs base")]
-    static void GeneratePrefabs()
+    public static void GeneratePrefabs()
     {
         Directory.CreateDirectory(PrefabDir);
         Directory.CreateDirectory(MatDir);
@@ -187,6 +187,11 @@ public static class MySimsAssetBuilder
         robot.AddComponent<RobotCompanion>();
         SavePrefab(robot, "Robot");
 
+        // Playas: actividades especiales (nadar, bronceado, volley)
+        SavePrefab(BuildFurniture("Alberca",      NeedType.Diversión, 300f, new Color(0.3f, 0.65f, 0.9f),  SkillType.Fitness,     new Vector3(2.5f, 0.6f, 2.5f), null, 1f), "Alberca");
+        SavePrefab(BuildFurniture("SillaPlaya",   NeedType.Energia,    60f, new Color(1f, 0.95f, 0.75f),    SkillType.Creatividad, new Vector3(0.6f, 0.5f, 1.3f),  null, 1f), "SillaPlaya");
+        SavePrefab(BuildFurniture("RedVoleibol",  NeedType.Diversión, 150f, new Color(0.9f, 0.75f, 0.4f),  SkillType.Carisma,    new Vector3(2f, 2.2f, 1f),      null, 1f), "RedVoleibol");
+
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log("MySims: prefabs base generados en " + PrefabDir + ". Ya puedes correr MySims/2. Crear escena base.");
@@ -195,7 +200,7 @@ public static class MySimsAssetBuilder
     // ---------- escena ----------
 
     [MenuItem("MySims/2. Crear escena base")]
-    static void BuildScene()
+    public static void BuildScene()
     {
         if (AssetDatabase.LoadAssetAtPath<GameObject>($"{PrefabDir}/Cama.prefab") == null)
         {
@@ -254,6 +259,8 @@ public static class MySimsAssetBuilder
         var future = gm.AddComponent<FutureSystem>();
         gm.AddComponent<JobCatalog>();
         gm.AddComponent<SeasonSystem>();
+        gm.AddComponent<AudioManager>();
+        gm.AddComponent<DailyMissionSystem>();
 
         var workPoint = new GameObject("PuntoTrabajo");
         workPoint.transform.position = new Vector3(15f, 0f, 0f);
@@ -269,7 +276,7 @@ public static class MySimsAssetBuilder
 
         // PrefabRegistry con todo el catalogo generado
         var registry = gm.AddComponent<PrefabRegistry>();
-        string[] names = { "Cama", "Refri", "Ducha", "TV", "Sofa", "Escritorio", "Caballete", "Comedero", "Pared", "Perro", "Gato", "Child", "Robot" };
+        string[] names = { "Cama", "Refri", "Ducha", "TV", "Sofa", "Escritorio", "Caballete", "Comedero", "Alberca", "SillaPlaya", "RedVoleibol", "Pared", "Perro", "Gato", "Child", "Robot" };
         foreach (var n in names)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{PrefabDir}/{n}.prefab");
@@ -308,6 +315,12 @@ public static class MySimsAssetBuilder
         var snorkel = Object.Instantiate(snorkelGo, cancun.zoneRoot.transform);
         snorkel.name = "Snorkel";
         snorkel.AddComponent<VacationActivity>().activityType = VacationActivityType.Snorkel;
+
+        // Actividades de playa: nadar, bronceado y volley dentro de Cancun
+        PlaceInZone(cancun, "Alberca", new Vector3(-4f, 0f, 2f));
+        PlaceInZone(cancun, "SillaPlaya", new Vector3(1f, 0f, 3f));
+        PlaceInZone(cancun, "SillaPlaya", new Vector3(3f, 0f, 3f));
+        PlaceInZone(cancun, "RedVoleibol", new Vector3(0f, 0f, -3f));
 
         // Vecinos con rutina en Monterrey
         var vecino1 = BuildCreature("VecinoA", new Color(0.7f, 0.5f, 0.35f), 1.8f, "character-b");
@@ -373,6 +386,15 @@ public static class MySimsAssetBuilder
         return zone;
     }
 
+    static void PlaceInZone(LocationZone zone, string prefabName, Vector3 localPos)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{PrefabDir}/{prefabName}.prefab");
+        if (prefab == null) return;
+        var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+        go.transform.SetParent(zone.zoneRoot.transform);
+        go.transform.localPosition = localPos;
+    }
+
     static void PlaceInScene(string prefabName, Vector3 pos)
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{PrefabDir}/{prefabName}.prefab");
@@ -406,6 +428,25 @@ public static class MySimsAssetBuilder
             var ctrl = btn.gameObject.AddComponent<TimeControlsUI>();
             ctrl.speedIndex = i;
         }
+
+        // Boton de sonido al lado de los controles de tiempo
+        var soundBtn = MakeButton(canvas.transform, "Sonido", new Vector2(90f, -20f));
+        soundBtn.gameObject.AddComponent<AudioToggleUI>();
+
+        // Panel de misiones diarias arriba a la derecha
+        var missionsGo = new GameObject("MissionsPanel", typeof(RectTransform), typeof(Text));
+        var mRt = missionsGo.GetComponent<RectTransform>();
+        mRt.SetParent(canvas.transform);
+        mRt.anchorMin = mRt.anchorMax = new Vector2(1f, 1f);
+        mRt.pivot = new Vector2(1f, 1f);
+        mRt.anchoredPosition = new Vector2(-10f, -10f);
+        mRt.sizeDelta = new Vector2(240f, 120f);
+        var mTxt = missionsGo.GetComponent<Text>();
+        mTxt.alignment = TextAnchor.UpperRight;
+        mTxt.fontSize = 13;
+        mTxt.color = Color.white;
+        mTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        missionsGo.AddComponent<MissionsUI>();
     }
 
     static Slider MakeBar(Transform parent, string name, float y)

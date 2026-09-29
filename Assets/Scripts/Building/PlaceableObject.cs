@@ -13,6 +13,9 @@ namespace MySims
     {
         public static readonly List<PlaceableObject> All = new List<PlaceableObject>();
 
+        /// <summary>Se dispara cada vez que un personaje empieza a usar este objeto.</summary>
+        public static event System.Action<PlaceableObject> OnUsed;
+
         [Header("Configuracion")]
         public NeedType satisfies;
         public string displayName = "Mueble";
@@ -40,7 +43,12 @@ namespace MySims
         void OnEnable() => All.Add(this);
         void OnDisable() => All.Remove(this);
 
-        public void StartUse(NPCController user) { currentUser = user; }
+        public void StartUse(NPCController user)
+        {
+            currentUser = user;
+            AudioManager.PlayUse(satisfies);
+            OnUsed?.Invoke(this);
+        }
         public void ContinueUse(NPCController user)
         {
             // Recuperar a ritmo de juego: recoverPerHour * (minutos de juego este frame / 60)

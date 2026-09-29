@@ -19,6 +19,9 @@ Sistemas ya implementados como código base:
 | 📊 UI necesidades | `UI/NeedsUIController.cs` | Barras estilo Sims con color por nivel (verde/amarillo/rojo) |
 | ⏩ Controles de tiempo | `UI/TimeControlsUI.cs` | Botones pausa / x1 / x2 / x4 |
 | 🏃 Animación procedural | `NPC/SimpleLocomotion.cs` | Bob al caminar, respiración en idle, giro suave (sin necesidad de rig) |
+| 🔊 Sonido y música | `Audio/AudioManager.cs` | Sonido ambiente y música 100% procedural (sin archivos), cambia entre día y noche, botón Sonido |
+| 🗓️ Misiones diarias | `Progress/DailyMissionSystem.cs` | 3 misiones por día (usar muebles, XP, dinero, viajes) con recompensa y logro "misionero" |
+| 🏖️ Playa completa | `Alberca`, `SillaPlaya`, `RedVoleibol` | Nadar, bronceado y volley: nuevos muebles en la tienda y colocados en Cancún |
 
 ## Puesta en marcha rápida (arte incluido)
 
@@ -33,6 +36,24 @@ El proyecto genera su propio arte placeholder y la escena completa desde el edit
 - `KenneyFurniture/`: cama, refri, ducha, TV, sofá, escritorio, librería, planta y más (21 FBX del Furniture Kit).
 - `KenneyCharacters/`: 18 personajes blocky para el sim, vecinos, niños y robots.
 Si un modelo falta, el generador usa cubos de respaldo automáticamente.
+
+## 📦 Generar el APK automáticamente (GitHub Actions)
+
+El repo incluye CI: en cada push a `main`, GitHub compila el APK con Unity 2022.3.50f1 (game-ci) y lo sube como artefacto descargable.
+
+Configuración única (licencia personal gratuita):
+
+1. En tu PC: Unity Hub → Preferences → Licenses → **Add** → *Get a free personal license*. Esto crea un archivo `.ulf`.
+   - Windows: `C:\ProgramData\Unity\Unity_lic.ulf`
+   - Mac: `/Library/Application Support/Unity/Unity_lic.ulf`
+   - Linux: `~/.local/share/unity3d/Unity/Unity_lic.ulf`
+2. En el repo: **Settings → Secrets and variables → Actions**, crea 3 secrets:
+   - `UNITY_LICENSE` = contenido del `.ulf`
+   - `UNITY_EMAIL` = tu correo de Unity
+   - `UNITY_PASSWORD` = tu contraseña de Unity
+3. Dale **Actions → Build APK → Run workflow** (o simplemente haz un push).
+
+El APK aparece en la pestaña **Actions** de la corrida, en *Artifacts → MySims-APK*. El primer build tarda ~30-45 min; los siguientes usan caché del Library y son más rápidos.
 
 ## Cómo abrir el proyecto
 
