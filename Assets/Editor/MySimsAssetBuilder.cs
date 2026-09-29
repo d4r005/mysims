@@ -284,6 +284,21 @@ public static class MySimsAssetBuilder
         var surface = ground.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.All;
 
+        // Presentacion: cielo, sol con sombras suaves, casa inicial, arboles y nubes
+        BeautifyScene();
+        BuildStarterHouse();
+        BuildTree(new Vector3(-13f, 0f, 6f), 1.2f);
+        BuildTree(new Vector3(14f, 0f, 9f), 1.5f);
+        BuildTree(new Vector3(16f, 0f, -12f), 1.1f);
+        BuildTree(new Vector3(-17f, 0f, -3f), 1.4f);
+        BuildTree(new Vector3(10f, 0f, 13f), 1.2f);
+        BuildTree(new Vector3(-9f, 0f, 15f), 1.0f);
+        BuildCloud(new Vector3(-15f, 26f, -10f), 1.3f);
+        BuildCloud(new Vector3(20f, 29f, 15f), 1.8f);
+        BuildCloud(new Vector3(5f, 31f, -25f), 1.5f);
+        BuildCloud(new Vector3(-25f, 28f, 20f), 1.1f);
+        BuildCloud(new Vector3(12f, 27f, 28f), 1.4f);
+
         // Personaje jugador
         var player = BuildCreature("Sim", new Color(0.85f, 0.66f, 0.5f), 1.8f, "character-a");
         player.name = "Jugador";
@@ -387,6 +402,13 @@ public static class MySimsAssetBuilder
         PlaceInZone(cancun, "SillaPlaya", new Vector3(3f, 0f, 3f));
         PlaceInZone(cancun, "RedVoleibol", new Vector3(0f, 0f, -3f));
 
+        // Palmeras de la playa (hijas de la zona para que viajen con ella)
+        BuildPalm(cancun.zoneRoot.transform, new Vector3(-11f, 0f, -7f), 1.1f);
+        BuildPalm(cancun.zoneRoot.transform, new Vector3(8f, 0f, -9f), 1.3f);
+        BuildPalm(cancun.zoneRoot.transform, new Vector3(11f, 0f, 4f), 1.0f);
+        BuildPalm(cancun.zoneRoot.transform, new Vector3(-12f, 0f, 5f), 1.2f);
+        BuildPalm(cancun.zoneRoot.transform, new Vector3(7f, 0f, 11f), 1.1f);
+
         // Vecinos con rutina en Monterrey
         var vecino1 = BuildCreature("VecinoA", new Color(0.7f, 0.5f, 0.35f), 1.8f, "character-b");
         vecino1.AddComponent<NavMeshAgent>();
@@ -417,6 +439,146 @@ public static class MySimsAssetBuilder
 
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/Main.unity");
         Debug.Log("MySims: escena base creada en Assets/Scenes/Main.unity. Dale Play para probar.");
+    }
+
+
+    // ---------- presentacion visual ----------
+
+    static void BeautifyScene()
+    {
+        // Cielo procedural azul
+        var skyShader = Shader.Find("Skybox/Procedural");
+        if (skyShader != null)
+        {
+            var sky = AssetDatabase.LoadAssetAtPath<Material>(MatDir + "/Cielo.mat");
+            if (sky == null)
+            {
+                sky = new Material(skyShader);
+                AssetDatabase.CreateAsset(sky, MatDir + "/Cielo.mat");
+            }
+            sky.SetFloat("_AtmosphereThickness", 0.95f);
+            sky.SetFloat("_SunSize", 0.045f);
+            sky.SetFloat("_Exposure", 1.15f);
+            sky.SetColor("_SkyTint", new Color(0.55f, 0.75f, 0.95f));
+            RenderSettings.skybox = sky;
+        }
+
+        // Luz ambiente en tres tonos + niebla suave para profundidad
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+        RenderSettings.ambientSkyColor = new Color(0.58f, 0.74f, 0.95f);
+        RenderSettings.ambientEquatorColor = new Color(0.78f, 0.74f, 0.62f);
+        RenderSettings.ambientGroundColor = new Color(0.32f, 0.38f, 0.28f);
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Linear;
+        RenderSettings.fogStartDistance = 70f;
+        RenderSettings.fogEndDistance = 180f;
+        RenderSettings.fogColor = new Color(0.78f, 0.88f, 0.98f);
+
+        // Sol: sombras suaves y tono calido
+        foreach (var l in Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (l.type != LightType.Directional) continue;
+            l.shadows = LightShadows.Soft;
+            l.intensity = 1.15f;
+            l.color = new Color(1f, 0.96f, 0.88f);
+            l.transform.rotation = Quaternion.Euler(50f, -35f, 0f);
+        }
+    }
+
+    static void StripColliders(GameObject root)
+    {
+        foreach (var col in root.GetComponentsInChildren<Collider>())
+            Object.DestroyImmediate(col);
+    }
+
+    /// <summary>Casa inicial alrededor de los muebles: piso de madera, muros con puerta y techo de teja.</summary>
+    static void BuildStarterHouse()
+    {
+        var shell = new GameObject("CasaInicial");
+        var wallMat = GetMat("CasaMuro", new Color(0.93f, 0.9f, 0.82f));
+        var floorMat = GetMat("CasaPiso", new Color(0.72f, 0.55f, 0.35f));
+        var roofMat = GetMat("CasaTecho", new Color(0.78f, 0.35f, 0.3f));
+
+        Cube("piso", shell.transform, new Vector3(0f, 0.05f, -5f), new Vector3(14f, 0.1f, 6f), floorMat);
+
+        Cube("muroTrasero", shell.transform, new Vector3(0f, 1.3f, -8.1f), new Vector3(14f, 2.6f, 0.2f), wallMat);
+        Cube("muroIzq", shell.transform, new Vector3(-7.1f, 1.3f, -5f), new Vector3(0.2f, 2.6f, 6.4f), wallMat);
+        Cube("muroDer", shell.transform, new Vector3(7.1f, 1.3f, -5f), new Vector3(0.2f, 2.6f, 6.4f), wallMat);
+        // Fachada con hueco de puerta al frente (z positivo)
+        Cube("fachadaIzq", shell.transform, new Vector3(-4.5f, 1.3f, -1.9f), new Vector3(5f, 2.6f, 0.2f), wallMat);
+        Cube("fachadaDer", shell.transform, new Vector3(4.5f, 1.3f, -1.9f), new Vector3(5f, 2.6f, 0.2f), wallMat);
+        Cube("dintel", shell.transform, new Vector3(0f, 2.35f, -1.9f), new Vector3(4f, 0.5f, 0.2f), wallMat);
+
+        Cube("techo", shell.transform, new Vector3(0f, 2.75f, -5f), new Vector3(14.6f, 0.3f, 7f), roofMat);
+
+        // Ventanas con marco en la pared trasera
+        var winMat = GetMat("Ventana", new Color(0.55f, 0.8f, 0.95f));
+        var frameMat = GetMat("MarcoVentana", new Color(1f, 1f, 0.98f));
+        Cube("marcoL", shell.transform, new Vector3(-4f, 1.5f, -8.16f), new Vector3(1.6f, 1.3f, 0.08f), frameMat);
+        Cube("vidrioL", shell.transform, new Vector3(-4f, 1.5f, -8.17f), new Vector3(1.3f, 1.05f, 0.06f), winMat);
+        Cube("marcoR", shell.transform, new Vector3(4f, 1.5f, -8.16f), new Vector3(1.6f, 1.3f, 0.08f), frameMat);
+        Cube("vidrioR", shell.transform, new Vector3(4f, 1.5f, -8.17f), new Vector3(1.3f, 1.05f, 0.06f), winMat);
+
+        // Camino de entrada (sin collider para no romper el NavMesh)
+        var path = Cube("camino", shell.transform, new Vector3(0f, 0.02f, 2.5f), new Vector3(2.6f, 0.05f, 7f), GetMat("Camino", new Color(0.82f, 0.78f, 0.68f)));
+        Object.DestroyImmediate(path.GetComponent<Collider>());
+    }
+
+    static void BuildTree(Vector3 pos, float scale)
+    {
+        var t = new GameObject("Arbol");
+        t.transform.position = pos;
+        var trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        trunk.name = "tronco";
+        trunk.transform.SetParent(t.transform);
+        trunk.transform.localPosition = new Vector3(0f, 0.9f * scale, 0f);
+        trunk.transform.localScale = new Vector3(0.35f * scale, 0.9f * scale, 0.35f * scale);
+        trunk.GetComponent<Renderer>().sharedMaterial = GetMat("Tronco", new Color(0.45f, 0.3f, 0.18f));
+        var crown = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        crown.name = "copa";
+        crown.transform.SetParent(t.transform);
+        crown.transform.localPosition = new Vector3(0f, 2.1f * scale, 0f);
+        crown.transform.localScale = new Vector3(1.5f * scale, 1.7f * scale, 1.5f * scale);
+        crown.GetComponent<Renderer>().sharedMaterial = GetMat("Hojas", new Color(0.28f, 0.58f, 0.3f));
+    }
+
+    static void BuildPalm(Transform parent, Vector3 localPos, float scale)
+    {
+        var p = new GameObject("Palmera");
+        p.transform.SetParent(parent);
+        p.transform.localPosition = localPos;
+        var trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        trunk.name = "tronco";
+        trunk.transform.SetParent(p.transform);
+        trunk.transform.localPosition = new Vector3(0f, 1.9f * scale, 0f);
+        trunk.transform.localScale = new Vector3(0.28f * scale, 1.9f * scale, 0.28f * scale);
+        trunk.transform.localRotation = Quaternion.Euler(6f, 0f, 5f);
+        trunk.GetComponent<Renderer>().sharedMaterial = GetMat("TroncoPalma", new Color(0.55f, 0.42f, 0.26f));
+
+        var top = new GameObject("copa");
+        top.transform.SetParent(p.transform);
+        top.transform.localPosition = new Vector3(0.2f * scale, 3.8f * scale, 0.2f * scale);
+        var leafMat = GetMat("HojaPalma", new Color(0.25f, 0.62f, 0.3f));
+        for (int i = 0; i < 6; i++)
+        {
+            var arm = new GameObject("brazo" + i);
+            arm.transform.SetParent(top.transform);
+            arm.transform.localRotation = Quaternion.Euler(0f, i * 60f, 0f);
+            var leaf = Cube("hoja", arm.transform, new Vector3(1.2f * scale, 0f, 0f), new Vector3(2.4f * scale, 0.1f * scale, 0.55f * scale), leafMat);
+            leaf.transform.localRotation = Quaternion.Euler(0f, 0f, -14f);
+        }
+    }
+
+    static void BuildCloud(Vector3 pos, float scale)
+    {
+        var c = new GameObject("Nube");
+        c.transform.position = pos;
+        var mat = GetMat("Nube", new Color(0.98f, 0.98f, 1f));
+        Cube("n1", c.transform, new Vector3(0f, 0f, 0f), new Vector3(6f, 1.4f, 3.5f), mat);
+        Cube("n2", c.transform, new Vector3(2.2f, 0.5f, 0.6f), new Vector3(3.5f, 1.2f, 2.6f), mat);
+        Cube("n3", c.transform, new Vector3(-2f, 0.4f, -0.5f), new Vector3(3f, 1.1f, 2.4f), mat);
+        c.transform.localScale = Vector3.one * scale;
+        StripColliders(c);
     }
 
     static LocationZone MakeZone(string goName, string id, string country, LocationType type, Vector3 pos, Color color, bool startActive)
