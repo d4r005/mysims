@@ -37,7 +37,7 @@ El proyecto genera su propio arte placeholder y la escena completa desde el edit
 **Arte incluido:** el repo ya trae 39 modelos low-poly CC0 de Kenney en `Assets/Art`:
 - `KenneyFurniture/`: cama, refri, ducha, TV, sofá, escritorio, librería, planta y más (21 FBX del Furniture Kit).
 - `KenneyCharacters/`: 18 personajes blocky para el sim, vecinos, niños y robots.
-Si un modelo falta, el generador usa cubos de respaldo automáticamente.
+Si un modelo falta, el generador usa cubos de respaldo automáticamente. El tamaño de cada modelo se autoajusta a las medidas pensadas para ese hueco (el mismo tamaño del cubo de respaldo), así encaje bien sin importar la escala interna del FBX.
 
 ## 📦 Generar el APK automáticamente (GitHub Actions)
 

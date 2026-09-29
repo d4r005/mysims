@@ -57,8 +57,16 @@ public static class MySimsAssetBuilder
 
     // ---------- modelos Kenney ----------
 
-    /// <summary>Instancia un modelo FBX de Assets/Art como hijo del prefab, con collider por bounds.</summary>
-    static GameObject AttachModel(string folder, string modelName, Transform parent, float scale, System.Func<GameObject> fallback, Color? tint = null)
+    /// <summary>
+    /// Instancia un modelo FBX de Assets/Art como hijo del prefab, con collider por bounds.
+    /// Autoajuste de escala: cada FBX de Kenney trae sus propias unidades internas
+    /// (no vienen normalizados entre si), asi que en vez de aplicar un factor fijo
+    /// medimos el tamano real del modelo importado y lo escalamos para que ocupe
+    /// "targetSize" (el mismo tamano que usa el cubo de respaldo para ese mueble).
+    /// Un componente de targetSize en 0 significa "no lo uses para calibrar" (util
+    /// para personajes, donde solo nos importa igualar la altura).
+    /// </summary>
+    static GameObject AttachModel(string folder, string modelName, Transform parent, Vector3 targetSize, System.Func<GameObject> fallback, Color? tint = null)
     {
         string path = $"Assets/Art/{folder}/{modelName}.fbx";
         var fbx = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -73,21 +81,34 @@ public static class MySimsAssetBuilder
         model.transform.SetParent(parent);
         model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.identity;
-        model.transform.localScale = Vector3.one * scale;
+        model.transform.localScale = Vector3.one;
+
+        var rawBounds = new Bounds(model.transform.position, Vector3.zero);
+        var renderers = model.GetComponentsInChildren<Renderer>();
+        foreach (var r in renderers) rawBounds.Encapsulate(r.bounds);
+
+        if (renderers.Length > 0)
+        {
+            float uniform = float.MaxValue;
+            if (targetSize.x > 0f && rawBounds.size.x > 0.0001f) uniform = Mathf.Min(uniform, targetSize.x / rawBounds.size.x);
+            if (targetSize.y > 0f && rawBounds.size.y > 0.0001f) uniform = Mathf.Min(uniform, targetSize.y / rawBounds.size.y);
+            if (targetSize.z > 0f && rawBounds.size.z > 0.0001f) uniform = Mathf.Min(uniform, targetSize.z / rawBounds.size.z);
+            if (uniform < float.MaxValue) model.transform.localScale = Vector3.one * uniform;
+        }
 
         // Kenney ships sin textura: pintamos con el color de la paleta en vez de dejar el material gris por defecto
         if (tint.HasValue)
         {
             var tintMat = GetMat(modelName + "_tint", tint.Value);
-            foreach (var r in model.GetComponentsInChildren<Renderer>()) r.sharedMaterial = tintMat;
+            foreach (var r in renderers) r.sharedMaterial = tintMat;
         }
 
-        // Collider generado por los bounds visuales para que el raycast funcione
+        // Collider generado por los bounds visuales (ya escalados) para que el raycast funcione
         if (model.GetComponent<Collider>() == null)
         {
             var box = model.AddComponent<BoxCollider>();
             var bounds = new Bounds(model.transform.position, Vector3.zero);
-            foreach (var r in model.GetComponentsInChildren<Renderer>()) bounds.Encapsulate(r.bounds);
+            foreach (var r in renderers) bounds.Encapsulate(r.bounds);
             box.center = model.transform.InverseTransformPoint(bounds.center);
             Vector3 worldSize = bounds.size;
             box.size = model.transform.InverseTransformDirection(worldSize);
@@ -97,10 +118,10 @@ public static class MySimsAssetBuilder
 
     // ---------- muebles ----------
 
-    static GameObject BuildFurniture(string name, NeedType need, float price, Color color, SkillType skill, Vector3 size, string kenneyModel, float modelScale, bool forPets = false)
+    static GameObject BuildFurniture(string name, NeedType need, float price, Color color, SkillType skill, Vector3 size, string kenneyModel, bool forPets = false)
     {
         var root = new GameObject(name);
-        AttachModel("KenneyFurniture", kenneyModel, root.transform, modelScale,
+        AttachModel("KenneyFurniture", kenneyModel, root.transform, size,
             () => { var mat = GetMat(name, color); return Cube("base", root.transform, Vector3.zero, size, mat); },
             color);
 
@@ -180,7 +201,7 @@ public static class MySimsAssetBuilder
         var root = new GameObject(name);
 
         var model = characterModel != null
-            ? AttachModel("KenneyCharacters", characterModel, root.transform, height / 1.8f, null, bodyColor)
+            ? AttachModel("KenneyCharacters", characterModel, root.transform, new Vector3(0f, height, 0f), null, bodyColor)
             : null;
 
         if (model == null)
@@ -218,16 +239,16 @@ public static class MySimsAssetBuilder
         Directory.CreateDirectory(MatDir);
 
         // Muebles con modelos low-poly CC0 de Kenney. Si falta el FBX, respaldo en cubo.
-        SavePrefab(BuildFurniture("Cama",       NeedType.Energia,   150f, new Color(0.9f, 0.9f, 0.95f), SkillType.Creatividad, new Vector3(1f, 0.5f, 2f),    "bedSingle",        1f), "Cama");
-        SavePrefab(BuildFurniture("Refri",      NeedType.Hambre,    200f, new Color(0.85f, 0.85f, 0.9f),  SkillType.Cocina,     new Vector3(0.8f, 1.8f, 0.8f), "kitchenFridge",    1f), "Refri");
-        SavePrefab(BuildFurniture("Ducha",      NeedType.Higiene,   120f, new Color(0.5f, 0.8f, 0.95f),  SkillType.Fitness,    new Vector3(0.9f, 2f, 0.9f),   "shower",           1f), "Ducha");
-        SavePrefab(BuildFurniture("TV",         NeedType.Diversión, 250f, new Color(0.15f, 0.15f, 0.18f), SkillType.Logica,     new Vector3(1.2f, 0.8f, 0.2f), "televisionModern", 1f), "TV");
-        SavePrefab(BuildFurniture("Sofa",       NeedType.Social,    90f,  new Color(0.6f, 0.3f, 0.3f),    SkillType.Carisma,    new Vector3(1.6f, 0.6f, 0.8f), "loungeSofa",       1f), "Sofa");
-        SavePrefab(BuildFurniture("Escritorio", NeedType.Diversión, 130f, new Color(0.5f, 0.35f, 0.2f),  SkillType.Logica,     new Vector3(1.2f, 0.75f, 0.7f), "desk",             1f), "Escritorio");
-        SavePrefab(BuildFurniture("Libreria",   NeedType.Diversión,  80f, new Color(0.55f, 0.4f, 0.25f),  SkillType.Logica,     new Vector3(1f, 1.8f, 0.4f),   "bookcaseOpen",     1f), "Libreria");
-        SavePrefab(BuildFurniture("Caballete",  NeedType.Diversión, 100f, new Color(0.8f, 0.7f, 0.4f),  SkillType.Creatividad, new Vector3(0.6f, 1.5f, 0.6f), null,               1f), "Caballete");
-        SavePrefab(BuildFurniture("Planta",     NeedType.Diversión,  45f, new Color(0.3f, 0.6f, 0.3f),   SkillType.Creatividad, new Vector3(0.5f, 0.8f, 0.5f), "pottedPlant",     1f), "Planta");
-        SavePrefab(BuildFurniture("Comedero",  NeedType.Hambre,    40f,  new Color(0.4f, 0.25f, 0.15f), SkillType.Cocina,     new Vector3(0.5f, 0.2f, 0.5f), null,               1f, true), "Comedero");
+        SavePrefab(BuildFurniture("Cama",       NeedType.Energia,   150f, new Color(0.9f, 0.9f, 0.95f), SkillType.Creatividad, new Vector3(1f, 0.5f, 2f),    "bedSingle"), "Cama");
+        SavePrefab(BuildFurniture("Refri",      NeedType.Hambre,    200f, new Color(0.85f, 0.85f, 0.9f),  SkillType.Cocina,     new Vector3(0.8f, 1.8f, 0.8f), "kitchenFridge"), "Refri");
+        SavePrefab(BuildFurniture("Ducha",      NeedType.Higiene,   120f, new Color(0.5f, 0.8f, 0.95f),  SkillType.Fitness,    new Vector3(0.9f, 2f, 0.9f),   "shower"), "Ducha");
+        SavePrefab(BuildFurniture("TV",         NeedType.Diversión, 250f, new Color(0.15f, 0.15f, 0.18f), SkillType.Logica,     new Vector3(1.2f, 0.8f, 0.2f), "televisionModern"), "TV");
+        SavePrefab(BuildFurniture("Sofa",       NeedType.Social,    90f,  new Color(0.6f, 0.3f, 0.3f),    SkillType.Carisma,    new Vector3(1.6f, 0.6f, 0.8f), "loungeSofa"), "Sofa");
+        SavePrefab(BuildFurniture("Escritorio", NeedType.Diversión, 130f, new Color(0.5f, 0.35f, 0.2f),  SkillType.Logica,     new Vector3(1.2f, 0.75f, 0.7f), "desk"), "Escritorio");
+        SavePrefab(BuildFurniture("Libreria",   NeedType.Diversión,  80f, new Color(0.55f, 0.4f, 0.25f),  SkillType.Logica,     new Vector3(1f, 1.8f, 0.4f),   "bookcaseOpen"), "Libreria");
+        SavePrefab(BuildFurniture("Caballete",  NeedType.Diversión, 100f, new Color(0.8f, 0.7f, 0.4f),  SkillType.Creatividad, new Vector3(0.6f, 1.5f, 0.6f), null), "Caballete");
+        SavePrefab(BuildFurniture("Planta",     NeedType.Diversión,  45f, new Color(0.3f, 0.6f, 0.3f),   SkillType.Creatividad, new Vector3(0.5f, 0.8f, 0.5f), "pottedPlant"), "Planta");
+        SavePrefab(BuildFurniture("Comedero",  NeedType.Hambre,    40f,  new Color(0.4f, 0.25f, 0.15f), SkillType.Cocina,     new Vector3(0.5f, 0.2f, 0.5f), null, true), "Comedero");
 
         // Pared para el editor de casa
         var wall = new GameObject("Pared");
@@ -253,9 +274,9 @@ public static class MySimsAssetBuilder
         SavePrefab(robot, "Robot");
 
         // Playas: actividades especiales (nadar, bronceado, volley)
-        SavePrefab(BuildFurniture("Alberca",      NeedType.Diversión, 300f, new Color(0.3f, 0.65f, 0.9f),  SkillType.Fitness,     new Vector3(2.5f, 0.6f, 2.5f), null, 1f), "Alberca");
-        SavePrefab(BuildFurniture("SillaPlaya",   NeedType.Energia,    60f, new Color(1f, 0.95f, 0.75f),    SkillType.Creatividad, new Vector3(0.6f, 0.5f, 1.3f),  null, 1f), "SillaPlaya");
-        SavePrefab(BuildFurniture("RedVoleibol",  NeedType.Diversión, 150f, new Color(0.9f, 0.75f, 0.4f),  SkillType.Carisma,    new Vector3(2f, 2.2f, 1f),      null, 1f), "RedVoleibol");
+        SavePrefab(BuildFurniture("Alberca",      NeedType.Diversión, 300f, new Color(0.3f, 0.65f, 0.9f),  SkillType.Fitness,     new Vector3(2.5f, 0.6f, 2.5f), null), "Alberca");
+        SavePrefab(BuildFurniture("SillaPlaya",   NeedType.Energia,    60f, new Color(1f, 0.95f, 0.75f),    SkillType.Creatividad, new Vector3(0.6f, 0.5f, 1.3f),  null), "SillaPlaya");
+        SavePrefab(BuildFurniture("RedVoleibol",  NeedType.Diversión, 150f, new Color(0.9f, 0.75f, 0.4f),  SkillType.Carisma,    new Vector3(2f, 2.2f, 1f),      null), "RedVoleibol");
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
