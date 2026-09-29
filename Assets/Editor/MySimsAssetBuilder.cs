@@ -58,7 +58,7 @@ public static class MySimsAssetBuilder
     // ---------- modelos Kenney ----------
 
     /// <summary>Instancia un modelo FBX de Assets/Art como hijo del prefab, con collider por bounds.</summary>
-    static GameObject AttachModel(string folder, string modelName, Transform parent, float scale, System.Func<GameObject> fallback)
+    static GameObject AttachModel(string folder, string modelName, Transform parent, float scale, System.Func<GameObject> fallback, Color? tint = null)
     {
         string path = $"Assets/Art/{folder}/{modelName}.fbx";
         var fbx = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -74,6 +74,13 @@ public static class MySimsAssetBuilder
         model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.identity;
         model.transform.localScale = Vector3.one * scale;
+
+        // Kenney ships sin textura: pintamos con el color de la paleta en vez de dejar el material gris por defecto
+        if (tint.HasValue)
+        {
+            var tintMat = GetMat(modelName + "_tint", tint.Value);
+            foreach (var r in model.GetComponentsInChildren<Renderer>()) r.sharedMaterial = tintMat;
+        }
 
         // Collider generado por los bounds visuales para que el raycast funcione
         if (model.GetComponent<Collider>() == null)
@@ -94,7 +101,8 @@ public static class MySimsAssetBuilder
     {
         var root = new GameObject(name);
         AttachModel("KenneyFurniture", kenneyModel, root.transform, modelScale,
-            () => { var mat = GetMat(name, color); return Cube("base", root.transform, Vector3.zero, size, mat); });
+            () => { var mat = GetMat(name, color); return Cube("base", root.transform, Vector3.zero, size, mat); },
+            color);
 
         var placeable = root.AddComponent<PlaceableObject>();
         placeable.satisfies = need;
@@ -172,7 +180,7 @@ public static class MySimsAssetBuilder
         var root = new GameObject(name);
 
         var model = characterModel != null
-            ? AttachModel("KenneyCharacters", characterModel, root.transform, height / 1.8f, null)
+            ? AttachModel("KenneyCharacters", characterModel, root.transform, height / 1.8f, null, bodyColor)
             : null;
 
         if (model == null)
