@@ -91,5 +91,21 @@ namespace MySims
             panOffset = Vector3.zero;
             yaw = 45f; pitch = 40f; distance = 10f;
         }
+
+        /// <summary>
+        /// Coloca la camara de inmediato en su posicion de orbita final, sin esperar
+        /// al suavizado de Play. Util al generar la escena en el editor para que la
+        /// vista previa (y el primer frame de Play) ya se vean bien encuadrados.
+        /// </summary>
+        public void SnapToTarget()
+        {
+            if (followTarget == null) return;
+            Vector3 center = followTarget.position + panOffset;
+            Quaternion rot = Quaternion.Euler(pitch, yaw, 0f);
+            Vector3 desired = center - rot * Vector3.forward * distance;
+            transform.position = desired;
+            camVelocity = Vector3.zero;
+            transform.LookAt(center);
+        }
     }
 }

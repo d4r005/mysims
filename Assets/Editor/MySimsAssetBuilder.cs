@@ -380,6 +380,8 @@ public static class MySimsAssetBuilder
         var cam = Camera.main;
         var orbit = cam.gameObject.AddComponent<TouchCameraController>();
         orbit.followTarget = player.transform;
+        orbit.distance = 14f;
+        orbit.SnapToTarget(); // encuadra ya mismo, sin esperar al suavizado de Play
         var input = cam.gameObject.AddComponent<TouchInputController>();
         input.playerCharacter = npc;
         input.groundMask = ~0;
