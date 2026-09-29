@@ -511,7 +511,14 @@ public static class MySimsAssetBuilder
         Cube("fachadaDer", shell.transform, new Vector3(4.5f, 1.3f, -1.9f), new Vector3(5f, 2.6f, 0.2f), wallMat);
         Cube("dintel", shell.transform, new Vector3(0f, 2.35f, -1.9f), new Vector3(4f, 0.5f, 0.2f), wallMat);
 
-        Cube("techo", shell.transform, new Vector3(0f, 2.75f, -5f), new Vector3(14.6f, 0.3f, 7f), roofMat);
+        // Sin techo solido: la camara siempre mira desde arriba (estilo Sims), un techo completo
+        // tapa al jugador y los muebles. En vez de eso ponemos solo un cornisa/borde decorativo
+        // pegado a la parte superior de los muros, dejando el centro abierto para poder ver adentro.
+        Cube("cornisaTrasera", shell.transform, new Vector3(0f, 2.7f, -8.1f), new Vector3(14.6f, 0.3f, 0.6f), roofMat);
+        Cube("cornisaIzq", shell.transform, new Vector3(-7.1f, 2.7f, -5f), new Vector3(0.6f, 0.3f, 6.6f), roofMat);
+        Cube("cornisaDer", shell.transform, new Vector3(7.1f, 2.7f, -5f), new Vector3(0.6f, 0.3f, 6.6f), roofMat);
+        Cube("cornisaFachadaIzq", shell.transform, new Vector3(-4.5f, 2.7f, -1.9f), new Vector3(5.4f, 0.3f, 0.6f), roofMat);
+        Cube("cornisaFachadaDer", shell.transform, new Vector3(4.5f, 2.7f, -1.9f), new Vector3(5.4f, 0.3f, 0.6f), roofMat);
 
         // Ventanas con marco en la pared trasera
         var winMat = GetMat("Ventana", new Color(0.55f, 0.8f, 0.95f));
