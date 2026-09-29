@@ -32,6 +32,15 @@ public static class MySimsAssetBuilder
         if (shader == null) shader = Shader.Find("Standard");
         var mat = new Material(shader);
         mat.color = c;
+
+        // El Standard/URP-Lit trae Smoothness ~0.5 por defecto: en un color solido
+        // plano (paredes, piso, muebles sin textura) eso se ve como un reflejo
+        // especular de plastico. Lo bajamos para un acabado mate, mas parecido
+        // al look pintado/cartoon de Los Sims que a plastico brilloso.
+        if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", 0.12f);
+        if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", 0.12f);
+        if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", 0f);
+
         AssetDatabase.CreateAsset(mat, path);
         return mat;
     }
@@ -490,9 +499,10 @@ public static class MySimsAssetBuilder
 
         // Luz ambiente en tres tonos + niebla suave para profundidad
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor = new Color(0.58f, 0.74f, 0.95f);
-        RenderSettings.ambientEquatorColor = new Color(0.78f, 0.74f, 0.62f);
-        RenderSettings.ambientGroundColor = new Color(0.32f, 0.38f, 0.28f);
+        RenderSettings.ambientIntensity = 1.1f;
+        RenderSettings.ambientSkyColor = new Color(0.62f, 0.80f, 0.98f);
+        RenderSettings.ambientEquatorColor = new Color(0.85f, 0.82f, 0.70f);
+        RenderSettings.ambientGroundColor = new Color(0.48f, 0.52f, 0.40f); // antes muy oscuro/verdoso, opacaba la parte de abajo de todo
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.Linear;
         RenderSettings.fogStartDistance = 70f;
@@ -504,9 +514,10 @@ public static class MySimsAssetBuilder
         {
             if (l.type != LightType.Directional) continue;
             l.shadows = LightShadows.Soft;
-            l.intensity = 1.15f;
+            l.intensity = 1.25f;
             l.color = new Color(1f, 0.96f, 0.88f);
             l.transform.rotation = Quaternion.Euler(50f, -35f, 0f);
+            RenderSettings.sun = l; // referencia explicita: el disco del cielo procedural y el ambiente lo necesitan
         }
     }
 
