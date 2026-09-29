@@ -897,6 +897,11 @@ public static class MySimsAssetBuilder
         tex.Apply();
         File.WriteAllBytes(path, tex.EncodeToPNG());
 
+        // El AssetDatabase todavia no sabe que este archivo existe justo despues
+        // de escribirlo a disco: sin este import forzado, GetAtPath devuelve null
+        // y la siguiente linea tira NullReferenceException.
+        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+
         var imp = (TextureImporter)AssetImporter.GetAtPath(path);
         imp.textureType = TextureImporterType.Sprite;
         imp.spriteImportMode = SpriteImportMode.Single;
