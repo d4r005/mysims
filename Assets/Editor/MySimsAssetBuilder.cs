@@ -5,6 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using Unity.AI.Navigation;
 using MySims;
 
 /// <summary>
@@ -158,8 +159,8 @@ public static class MySimsAssetBuilder
         SavePrefab(BuildFurniture("Ducha",      NeedType.Higiene,   120f, new Color(0.5f, 0.8f, 0.95f),  SkillType.Fitness,    new Vector3(0.9f, 2f, 0.9f),   "shower",           1f), "Ducha");
         SavePrefab(BuildFurniture("TV",         NeedType.Diversión, 250f, new Color(0.15f, 0.15f, 0.18f), SkillType.Logica,     new Vector3(1.2f, 0.8f, 0.2f), "televisionModern", 1f), "TV");
         SavePrefab(BuildFurniture("Sofa",       NeedType.Social,    90f,  new Color(0.6f, 0.3f, 0.3f),    SkillType.Carisma,    new Vector3(1.6f, 0.6f, 0.8f), "loungeSofa",       1f), "Sofa");
-        SavePrefab(BuildFurniture("Escritorio", NeedType.Logica,    130f, new Color(0.5f, 0.35f, 0.2f),  SkillType.Logica,     new Vector3(1.2f, 0.75f, 0.7f), "desk",             1f), "Escritorio");
-        SavePrefab(BuildFurniture("Libreria",   NeedType.Logica,     80f, new Color(0.55f, 0.4f, 0.25f),  SkillType.Logica,     new Vector3(1f, 1.8f, 0.4f),   "bookcaseOpen",     1f), "Libreria");
+        SavePrefab(BuildFurniture("Escritorio", NeedType.Diversión, 130f, new Color(0.5f, 0.35f, 0.2f),  SkillType.Logica,     new Vector3(1.2f, 0.75f, 0.7f), "desk",             1f), "Escritorio");
+        SavePrefab(BuildFurniture("Libreria",   NeedType.Diversión,  80f, new Color(0.55f, 0.4f, 0.25f),  SkillType.Logica,     new Vector3(1f, 1.8f, 0.4f),   "bookcaseOpen",     1f), "Libreria");
         SavePrefab(BuildFurniture("Caballete",  NeedType.Diversión, 100f, new Color(0.8f, 0.7f, 0.4f),  SkillType.Creatividad, new Vector3(0.6f, 1.5f, 0.6f), null,               1f), "Caballete");
         SavePrefab(BuildFurniture("Planta",     NeedType.Diversión,  45f, new Color(0.3f, 0.6f, 0.3f),   SkillType.Creatividad, new Vector3(0.5f, 0.8f, 0.5f), "pottedPlant",     1f), "Planta");
         SavePrefab(BuildFurniture("Comedero",  NeedType.Hambre,    40f,  new Color(0.4f, 0.25f, 0.15f), SkillType.Cocina,     new Vector3(0.5f, 0.2f, 0.5f), null,               1f, true), "Comedero");
@@ -348,7 +349,7 @@ public static class MySimsAssetBuilder
         surface.BuildNavMesh();
 
         // UI basica: barras de necesidad y botones de velocidad
-        BuildUI(gm, dialogue);
+        BuildUI(manager, dialogue);
 
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/Main.unity");
         Debug.Log("MySims: escena base creada en Assets/Scenes/Main.unity. Dale Play para probar.");
